@@ -1,0 +1,30 @@
+---
+import Icone from './Icone.astro';
+import { linkWhatsApp, negocio } from '../../data/negocio';
+
+interface Props {
+  texto?: string;
+  /** Mensagem que já chega escrita para o Gleiton, com o contexto do serviço. */
+  mensagem?: string;
+  variante?: 'zap' | 'fantasma';
+  class?: string;
+}
+
+const {
+  texto = 'Chamar no WhatsApp',
+  mensagem = negocio.whatsapp.mensagemPadrao,
+  variante = 'zap',
+  class: classe = '',
+} = Astro.props;
+---
+
+<a
+  href={linkWhatsApp(mensagem)}
+  class:list={['btn', variante === 'zap' ? 'btn-zap' : 'btn-fantasma', classe]}
+  target="_blank"
+  rel="noopener"
+  data-acao="whatsapp"
+>
+  <Icone nome="whatsapp" tamanho={20} />
+  {texto}
+</a>

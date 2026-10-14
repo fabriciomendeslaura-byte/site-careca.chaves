@@ -1,0 +1,151 @@
+---
+import Icone from '../ui/Icone.astro';
+import BotaoZap from '../ui/BotaoZap.astro';
+import { cobertura } from '../../data/cobertura';
+import { negocio } from '../../data/negocio';
+---
+
+<section class="secao" id="cobertura">
+  <div class="area">
+    <header class="cabecalho-cobertura revelar">
+      <p class="sobrancelha">
+        <Icone nome="local" tamanho={16} />
+        Onde eu atendo
+      </p>
+      <h2 class="titulo-secao">Base em Copacabana,<br />rodando o Rio inteiro</h2>
+      <p class="texto-secao">
+        Não achou seu bairro na lista? Chama assim mesmo. Boa parte do Rio eu atendo —
+        é só combinar o deslocamento antes.
+      </p>
+    </header>
+
+    <div class="regioes">
+      {
+        cobertura.map((regiao) => (
+          <article class:list={['regiao', regiao.principal && 'regiao--principal', 'revelar']}>
+            <div class="regiao__topo">
+              <h3 class="regiao__nome">{regiao.regiao}</h3>
+              {regiao.principal && <span class="regiao__selo">Atendimento mais rápido</span>}
+            </div>
+            <p class="regiao__nota">{regiao.nota}</p>
+            <ul class="regiao__bairros">
+              {regiao.bairros.map((bairro) => (
+                <li>{bairro}</li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="cobertura__rodape revelar">
+      <p>
+        <strong>{negocio.endereco.rua}</strong> — {negocio.endereco.bairro}, {negocio.endereco.cidade}/{negocio.endereco.estado}
+      </p>
+      <BotaoZap texto="Meu bairro está na lista?" mensagem="Olá! Você atende no meu bairro?" variante="fantasma" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .cabecalho-cobertura {
+    margin-bottom: 40px;
+  }
+
+  .regioes {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .regiao {
+    padding: 24px 22px;
+    background: linear-gradient(165deg, var(--color-superficie-alta), var(--color-superficie));
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-card);
+  }
+
+  .regiao--principal {
+    border-color: rgb(30 144 255 / 0.42);
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgb(30 144 255 / 0.14), transparent 62%),
+      linear-gradient(165deg, var(--color-superficie-alta), var(--color-superficie));
+  }
+
+  .regiao__topo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+
+  .regiao__nome {
+    margin: 0;
+    font-size: 1.34rem;
+    text-transform: uppercase;
+  }
+
+  .regiao__selo {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-azul-brilho);
+    border: 1px solid rgb(92 200 255 / 0.4);
+    border-radius: var(--radius-pilula);
+    padding: 4px 11px;
+  }
+
+  .regiao__nota {
+    margin: 0 0 16px;
+    color: var(--color-texto-fraco);
+    font-size: 0.93rem;
+  }
+
+  .regiao__bairros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .regiao__bairros li {
+    font-size: 0.89rem;
+    font-weight: 600;
+    color: var(--color-texto-suave);
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-pilula);
+    padding: 5px 13px;
+  }
+
+  .cobertura__rodape {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 26px;
+    padding: 20px 22px;
+    border: 1px dashed var(--color-borda-viva);
+    border-radius: var(--radius-card);
+  }
+
+  .cobertura__rodape p {
+    margin: 0;
+    color: var(--color-texto-suave);
+  }
+
+  @media (min-width: 780px) {
+    .regioes {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .regiao--principal {
+      grid-column: span 2;
+    }
+  }
+</style>

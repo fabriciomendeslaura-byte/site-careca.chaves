@@ -1,0 +1,197 @@
+---
+import Icone from './Icone.astro';
+import { linkWhatsApp } from '../../data/negocio';
+import type { Servico } from '../../data/servicos';
+
+interface Props {
+  servico: Servico;
+}
+
+const { servico } = Astro.props;
+---
+
+<article class:list={['servico', servico.destaque && 'servico--destaque', 'revelar']}>
+  <!-- A arte do card é desenhada em CSS e o ícone fica por baixo da foto.
+       Se a imagem não existir ou demorar, o card continua bonito e legível —
+       nunca aparece retângulo cinza quebrado. -->
+  <div class="servico__arte">
+    <div class="servico__brilho" aria-hidden="true"></div>
+    <Icone nome={servico.icone} tamanho={servico.destaque ? 72 : 56} class="servico__icone" />
+    <img
+      class="servico__foto"
+      src={servico.imagem}
+      alt={servico.imagemAlt}
+      loading="lazy"
+      decoding="async"
+      onerror="this.remove()"
+    />
+  </div>
+
+  <div class="servico__corpo">
+    <p class="servico__gancho">{servico.gancho}</p>
+    <h3 class="servico__titulo">{servico.titulo}</h3>
+    <p class="servico__descricao">{servico.descricao}</p>
+
+    <a href={linkWhatsApp(servico.mensagem)} class="servico__link" target="_blank" rel="noopener">
+      Falar sobre este serviço
+      <Icone nome="seta" tamanho={17} />
+    </a>
+  </div>
+</article>
+
+<style>
+  .servico {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(165deg, var(--color-superficie-alta), var(--color-superficie));
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .servico:hover {
+    border-color: var(--color-borda-viva);
+    transform: translateY(-4px);
+    box-shadow: 0 24px 50px -28px rgb(0 0 0 / 0.9);
+  }
+
+  /* --- Arte do topo ------------------------------------------------------ */
+  .servico__arte {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    background:
+      radial-gradient(80% 90% at 50% 110%, rgb(30 144 255 / 0.22), transparent 70%),
+      linear-gradient(170deg, #141b25, #0e131a);
+    border-bottom: 1px solid var(--color-borda);
+    overflow: hidden;
+  }
+
+  .servico__icone {
+    position: relative;
+    z-index: 2;
+    color: var(--color-azul-brilho);
+    opacity: 0.9;
+    transition: transform 0.3s ease;
+  }
+
+  .servico:hover .servico__icone {
+    transform: scale(1.08);
+  }
+
+  .servico__brilho {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(30 144 255 / 0.3), transparent 68%);
+    filter: blur(28px);
+    transition: opacity 0.3s ease;
+    opacity: 0.75;
+  }
+
+  .servico:hover .servico__brilho {
+    opacity: 1;
+  }
+
+  /* A foto cobre a arte quando existe; o ícone fica de reserva por baixo. */
+  .servico__foto {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.88;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+  }
+
+  .servico:hover .servico__foto {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+
+  /* --- Texto ------------------------------------------------------------- */
+  .servico__corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 24px 22px 26px;
+    flex: 1;
+  }
+
+  .servico__gancho {
+    margin: 0;
+    color: var(--color-ambar);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .servico__titulo {
+    margin: 0;
+    font-size: 1.42rem;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+
+  .servico__descricao {
+    margin: 0;
+    color: var(--color-texto-suave);
+    font-size: 0.99rem;
+    flex: 1;
+  }
+
+  .servico__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: var(--color-azul-brilho);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.96rem;
+    align-self: flex-start;
+  }
+
+  .servico__link :global(svg) {
+    transition: transform 0.2s ease;
+  }
+
+  .servico__link:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  /* --- Destaque ---------------------------------------------------------- */
+  /* O serviço de maior valor ocupa duas colunas e ganha moldura azul.
+     Hierarquia visual é o que diz ao olho por onde começar. */
+  .servico--destaque {
+    border-color: rgb(30 144 255 / 0.42);
+  }
+
+  .servico--destaque .servico__titulo {
+    font-size: 1.68rem;
+  }
+
+  @media (min-width: 760px) {
+    .servico--destaque {
+      grid-column: span 2;
+      flex-direction: row;
+    }
+
+    .servico--destaque .servico__arte {
+      aspect-ratio: auto;
+      flex: 1 1 46%;
+      border-bottom: none;
+      border-right: 1px solid var(--color-borda);
+    }
+
+    .servico--destaque .servico__corpo {
+      flex: 1 1 54%;
+      justify-content: center;
+      padding: 32px 30px;
+    }
+  }
+</style>

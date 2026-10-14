@@ -1,0 +1,84 @@
+---
+/**
+ * Relogio com a hora do visitante.
+ *
+ * E urgencia honesta: nao inventa escassez nem contagem regressiva falsa.
+ * Mostra a hora de verdade no relogio dele e diz que, aquela hora, tem alguem
+ * acordado. De madrugada, essa frase vale mais do que qualquer promessa.
+ *
+ * Nasce com a hora do servidor renderizada e so e ajustada pelo JavaScript —
+ * assim nunca aparece um espaco vazio piscando na tela.
+ */
+const agoraNoRio = new Intl.DateTimeFormat('pt-BR', {
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'America/Sao_Paulo',
+}).format(new Date());
+---
+
+<p class="relogio" data-relogio>
+  <span class="relogio__pulso" aria-hidden="true"></span>
+  Agora são <time data-relogio-hora>{agoraNoRio}</time> — e tem chaveiro acordado
+</p>
+
+<style>
+  .relogio {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 18px 9px 15px;
+    border-radius: var(--radius-pilula);
+    border: 1px solid rgb(37 211 102 / 0.28);
+    background: rgb(37 211 102 / 0.08);
+    color: var(--color-texto-suave);
+    font-size: 0.93rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .relogio time {
+    color: var(--color-texto);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .relogio__pulso {
+    position: relative;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-zap);
+    flex: none;
+  }
+
+  .relogio__pulso::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 2px solid var(--color-zap);
+    animation: pulsar 2.2s ease-out infinite;
+  }
+
+  @keyframes pulsar {
+    0% { transform: scale(0.6); opacity: 0.9; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+</style>
+
+<script>
+  // Acerta pelo relógio do visitante e segue atualizando de minuto em minuto.
+  const campoHora = document.querySelector<HTMLTimeElement>('[data-relogio-hora]');
+
+  if (campoHora) {
+    const escreverHora = () => {
+      campoHora.textContent = new Intl.DateTimeFormat('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date());
+    };
+
+    escreverHora();
+    setInterval(escreverHora, 30_000);
+  }
+</script>

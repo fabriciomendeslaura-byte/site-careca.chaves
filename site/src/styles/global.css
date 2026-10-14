@@ -1,0 +1,232 @@
+@import 'tailwindcss';
+
+/* ============================================================================
+   SISTEMA VISUAL — Careca Chaves
+
+   Direcao: oficina de chaveiro a noite. Grafite com leve viés azul (nunca cinza
+   puro, que parece desleixo), azul eletrico da marca como luz, e ambar reservado
+   a UMA coisa so: o botao de ligar. Se o ambar aparecer em outro lugar, ele para
+   de significar "e aqui que voce clica".
+
+   Tema unico escuro, por decisao: o site e visto quase sempre de madrugada, por
+   alguem na rua. Tela clara na cara de quem esta no escuro e hostil.
+   ============================================================================ */
+
+@theme {
+  /* --- Superfícies, do mais fundo ao mais próximo do leitor --- */
+  --color-grafite: #0a0c10;
+  --color-superficie: #11151c;
+  --color-superficie-alta: #171d26;
+  --color-borda: #1e2733;
+  --color-borda-viva: #2b3a4d;
+
+  /* --- Marca --- */
+  --color-azul: #1e90ff;
+  --color-azul-brilho: #5cc8ff;
+  --color-azul-fundo: #0d2338;
+
+  /* --- Ação --- */
+  --color-ambar: #ff7a1a;
+  --color-ambar-claro: #ffa155;
+  --color-zap: #25d366;
+
+  /* --- Texto --- */
+  --color-texto: #f5f7fa;
+  --color-texto-suave: #a9b4c4;
+  --color-texto-fraco: #768294;
+
+  /* --- Tipografia ---
+     Anton: condensada e pesada, conversa com a logo dele sem copiar o efeito 3D.
+     Barlow: desenhada para sinalização, tem ar industrial — combina com oficina
+     e continua legível em parágrafo. */
+  --font-display: 'Anton', 'Arial Narrow', system-ui, sans-serif;
+  --font-corpo: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* --- Ritmo --- */
+  --radius-card: 18px;
+  --radius-pilula: 999px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-grafite);
+    color: var(--color-texto);
+    font-family: var(--font-corpo);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* Anton é uma fonte alta e condensada: com line-height abaixo de 1 as linhas
+     encostam umas nas outras, e títulos pintados com `background-clip: text`
+     perdem o topo da letra, que fica fora da caixa da linha e sem tinta. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
+
+  /* Alvo de toque confortável: quem usa o site está com pressa e sem firmeza. */
+  a, button {
+    touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-azul-brilho);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-azul);
+    color: #fff;
+  }
+}
+
+@layer components {
+  /* Gutter lateral único do site. Centraliza a regra em vez de repetir px
+     em cada seção — mudar a margem do site inteiro vira uma linha. */
+  .area {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  .secao {
+    padding-block: clamp(64px, 9vw, 120px);
+  }
+
+  /* Rótulo de seção. O espaçamento entre letras é o que impede o caixa-alta
+     pequeno de virar um bloco ilegível. */
+  .sobrancelha {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-azul-brilho);
+  }
+
+  .titulo-secao {
+    font-size: clamp(2.1rem, 5.6vw, 3.4rem);
+    text-transform: uppercase;
+    margin-block: 14px 0;
+  }
+
+  .texto-secao {
+    color: var(--color-texto-suave);
+    max-width: 62ch;
+    margin-top: 16px;
+  }
+
+  /* --- Botões --------------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 26px;
+    border-radius: var(--radius-pilula);
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-ligar {
+    background: linear-gradient(180deg, var(--color-ambar-claro), var(--color-ambar));
+    color: #26130a;
+    box-shadow: 0 10px 30px -10px rgb(255 122 26 / 0.65);
+  }
+
+  .btn-ligar:hover {
+    box-shadow: 0 16px 38px -12px rgb(255 122 26 / 0.8);
+  }
+
+  .btn-zap {
+    background: var(--color-zap);
+    color: #05240f;
+    box-shadow: 0 10px 30px -12px rgb(37 211 102 / 0.6);
+  }
+
+  .btn-fantasma {
+    background: rgb(255 255 255 / 0.04);
+    border-color: var(--color-borda-viva);
+    color: var(--color-texto);
+    backdrop-filter: blur(6px);
+  }
+
+  .btn-fantasma:hover {
+    border-color: var(--color-azul);
+    background: rgb(30 144 255 / 0.1);
+  }
+
+  /* --- Cartões --------------------------------------------------------- */
+  .card {
+    position: relative;
+    background: linear-gradient(160deg, var(--color-superficie-alta), var(--color-superficie));
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+
+  /* --- Movimento ------------------------------------------------------- */
+  /* Elemento nasce visível e apenas desliza ao entrar na tela. Nunca deixar
+     em opacity 0 esperando o observador: se o JS falhar, some conteúdo. */
+  .revelar {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .revelar.visivel {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Quem configurou "reduzir movimento" no sistema tem enxaqueca, vertigem ou
+   simplesmente não aguenta animação. Ignorar isso é falha de acessibilidade. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .revelar {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Sem JavaScript, nada pode ficar invisível. */
+.sem-js .revelar {
+  opacity: 1;
+  transform: none;
+}

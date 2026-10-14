@@ -1,0 +1,119 @@
+---
+import Icone from '../ui/Icone.astro';
+
+/**
+ * Numeracao usada de proposito: aqui ela representa uma ordem real de
+ * acontecimentos, nao enfeite. Numerar o que nao e sequencia so confunde.
+ */
+const passos = [
+  {
+    titulo: 'Você liga ou chama no WhatsApp',
+    texto:
+      'Me diz o endereço, o que aconteceu e, se der, manda uma foto da porta ou da fechadura. Quanto mais eu souber antes de sair, mais rápido resolvo quando chegar.',
+  },
+  {
+    titulo: 'Combinamos o valor antes de eu sair',
+    texto:
+      'Você fica sabendo quanto vai pagar antes do serviço começar. Nada de descobrir o preço com a porta já aberta.',
+  },
+  {
+    titulo: 'Chego, resolvo e você confere',
+    texto:
+      'Confirmo que você é morador ou responsável pelo local, faço o serviço e só vou embora com a porta funcionando na sua frente.',
+  },
+];
+---
+
+<section class="secao secao--escura" id="como-funciona">
+  <div class="area">
+    <header class="cabecalho-passos revelar">
+      <p class="sobrancelha">
+        <Icone nome="raio" tamanho={16} />
+        Do seu lado da porta
+      </p>
+      <h2 class="titulo-secao">Como funciona<br />o atendimento</h2>
+    </header>
+
+    <ol class="passos">
+      {
+        passos.map((passo, indice) => (
+          <li class="passo revelar">
+            <span class="passo__numero" aria-hidden="true">
+              {String(indice + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h3 class="passo__titulo">{passo.titulo}</h3>
+              <p class="passo__texto">{passo.texto}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .secao--escura {
+    background:
+      radial-gradient(100% 60% at 50% 0%, rgb(30 144 255 / 0.07), transparent 60%),
+      #0c1016;
+    border-block: 1px solid var(--color-borda);
+  }
+
+  .cabecalho-passos {
+    margin-bottom: 44px;
+  }
+
+  .passos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 20px;
+    counter-reset: passo;
+  }
+
+  .passo {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 26px 24px;
+    background: linear-gradient(165deg, var(--color-superficie-alta), var(--color-superficie));
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-card);
+  }
+
+  /* Número grande e vazado: marca a etapa sem competir com o título. */
+  .passo__numero {
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 7vw, 3.6rem);
+    line-height: 0.8;
+    flex: none;
+    color: transparent;
+    -webkit-text-stroke: 1.6px var(--color-azul);
+    opacity: 0.8;
+  }
+
+  .passo__titulo {
+    margin: 0 0 7px;
+    font-size: 1.32rem;
+    text-transform: uppercase;
+  }
+
+  .passo__texto {
+    margin: 0;
+    color: var(--color-texto-suave);
+    max-width: 62ch;
+  }
+
+  @media (min-width: 900px) {
+    .passos {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .passo {
+      flex-direction: column;
+      gap: 14px;
+    }
+  }
+</style>

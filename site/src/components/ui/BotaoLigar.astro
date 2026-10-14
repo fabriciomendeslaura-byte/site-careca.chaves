@@ -1,0 +1,45 @@
+---
+import Icone from './Icone.astro';
+import { negocio } from '../../data/negocio';
+
+interface Props {
+  texto?: string;
+  /** Mostra o número embaixo do texto — usado onde o botão é o protagonista. */
+  comNumero?: boolean;
+  class?: string;
+}
+
+const { texto = 'Ligar agora', comNumero = false, class: classe = '' } = Astro.props;
+---
+
+<a
+  href={negocio.telefone.link}
+  class:list={['btn', 'btn-ligar', comNumero && 'btn-ligar--duplo', classe]}
+  data-acao="ligar"
+>
+  <Icone nome="telefone" tamanho={comNumero ? 22 : 20} />
+  <span class="btn-ligar__rotulo">
+    {texto}
+    {comNumero && <small>{negocio.telefone.exibicao}</small>}
+  </span>
+</a>
+
+<style>
+  .btn-ligar__rotulo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    text-align: left;
+  }
+
+  .btn-ligar__rotulo small {
+    font-size: 0.82em;
+    font-weight: 600;
+    opacity: 0.78;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn-ligar--duplo {
+    padding-block: 14px;
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import { desenhoDoIcone, type NomeIcone } from '../../data/icones';
+
+interface Props {
+  nome: NomeIcone;
+  tamanho?: number;
+  class?: string;
+}
+
+const { nome, tamanho = 24, class: classe = '' } = Astro.props;
+const { caminho, preenchido, circulo } = desenhoDoIcone(nome);
+---
+
+<svg
+  class={classe}
+  width={tamanho}
+  height={tamanho}
+  viewBox="0 0 24 24"
+  fill={preenchido ? 'currentColor' : 'none'}
+  stroke={preenchido ? undefined : 'currentColor'}
+  stroke-width={preenchido ? undefined : 1.8}
+  stroke-linecap={preenchido ? undefined : 'round'}
+  stroke-linejoin={preenchido ? undefined : 'round'}
+  aria-hidden="true"
+  focusable="false"
+>
+  {circulo && <circle cx={circulo.cx} cy={circulo.cy} r={circulo.r} />}
+  <path d={caminho} />
+</svg>

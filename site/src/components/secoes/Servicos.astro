@@ -1,0 +1,49 @@
+---
+import CardServico from '../ui/CardServico.astro';
+import Icone from '../ui/Icone.astro';
+import { servicos } from '../../data/servicos';
+---
+
+<section class="secao" id="servicos">
+  <div class="area">
+    <header class="cabecalho-secao revelar">
+      <p class="sobrancelha">
+        <Icone nome="chave" tamanho={16} />
+        O que eu resolvo
+      </p>
+      <h2 class="titulo-secao">Chaveiro completo,<br />na porta da sua casa</h2>
+      <p class="texto-secao">
+        Da emergência de madrugada à fechadura digital que você queria instalar há meses.
+        Clique no serviço e me conte seu caso — a mensagem já vai escrita.
+      </p>
+    </header>
+
+    <div class="grade-servicos">
+      {servicos.map((servico) => <CardServico servico={servico} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cabecalho-secao {
+    margin-bottom: 42px;
+  }
+
+  .grade-servicos {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 760px) {
+    .grade-servicos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1060px) {
+    .grade-servicos {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

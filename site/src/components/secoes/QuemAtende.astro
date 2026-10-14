@@ -1,0 +1,230 @@
+---
+import Icone from '../ui/Icone.astro';
+import BotaoLigar from '../ui/BotaoLigar.astro';
+import { negocio } from '../../data/negocio';
+
+/**
+ * Credibilidade so com fato conferivel.
+ *
+ * Nenhum depoimento, nota ou numero de clientes aparece aqui — porque nao
+ * existe nenhum verificado. Prova inventada e descoberta, queima a marca e
+ * cria risco juridico. Entao a confianca vem do que qualquer pessoa pode
+ * conferir sozinha: o CNPJ na Receita, a atividade registrada, o endereco.
+ */
+const provas = [
+  {
+    icone: 'escudo' as const,
+    titulo: 'Empresa registrada',
+    texto: `CNPJ ${negocio.cnpj}, em situação ativa. Confira na Receita Federal antes de abrir sua porta para qualquer pessoa.`,
+  },
+  {
+    icone: 'chave' as const,
+    titulo: 'Atividade de chaveiro',
+    texto:
+      'O CNPJ é registrado na atividade de chaveiro (CNAE 9529-1/02). Não é cadastro genérico aberto para qualquer coisa.',
+  },
+  {
+    icone: 'local' as const,
+    titulo: 'Endereço fixo',
+    texto: `${negocio.endereco.rua}, ${negocio.endereco.bairro}. Tem onde me achar — não é só um número de telefone na internet.`,
+  },
+  {
+    icone: 'relogio' as const,
+    titulo: `Na rua desde ${negocio.atuandoDesde}`,
+    texto: 'Mais de três anos atendendo chamado de emergência na Zona Sul do Rio.',
+  },
+];
+---
+
+<section class="secao secao--escura" id="quem-atende">
+  <div class="area quem">
+    <div class="quem__retrato revelar">
+      <div class="quem__moldura">
+        <img
+          src="/imagens/gleiton.webp"
+          alt="Ilustração de Gleiton, o Careca Chaves, segurando uma chave"
+          width="520"
+          height="520"
+          loading="lazy"
+          decoding="async"
+          onerror="this.closest('.quem__moldura').classList.add('quem__moldura--sem-foto')"
+        />
+      </div>
+      <p class="quem__assinatura">
+        <strong>{negocio.responsavel}</strong>
+        <span>o Careca Chaves</span>
+      </p>
+    </div>
+
+    <div class="quem__texto">
+      <header class="revelar">
+        <p class="sobrancelha">
+          <Icone nome="escudo" tamanho={16} />
+          Quem vai bater na sua porta
+        </p>
+        <h2 class="titulo-secao">Chaveiro não é<br />para confiar no escuro</h2>
+        <p class="texto-secao">
+          Você vai deixar um desconhecido abrir a porta da sua casa. O mínimo é saber quem ele é.
+          Então aqui não tem depoimento inventado nem estrela comprada — tem o que você mesmo
+          pode conferir.
+        </p>
+      </header>
+
+      <ul class="provas">
+        {
+          provas.map((prova) => (
+            <li class="prova revelar">
+              <span class="prova__icone">
+                <Icone nome={prova.icone} tamanho={21} />
+              </span>
+              <div>
+                <h3 class="prova__titulo">{prova.titulo}</h3>
+                <p class="prova__texto">{prova.texto}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="quem__acao revelar">
+        <BotaoLigar texto="Falar com o Gleiton" comNumero />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .quem {
+    display: grid;
+    gap: 40px;
+    align-items: start;
+  }
+
+  /* --- Retrato ---------------------------------------------------------- */
+  .quem__retrato {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .quem__moldura {
+    position: relative;
+    width: min(330px, 76vw);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 50% 30%, rgb(30 144 255 / 0.3), transparent 62%),
+      linear-gradient(170deg, #16202c, #0d1219);
+    border: 2px solid rgb(30 144 255 / 0.5);
+    box-shadow: 0 0 70px -18px rgb(30 144 255 / 0.65);
+    overflow: hidden;
+  }
+
+  .quem__moldura img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Sem a imagem, a moldura vira um disco com a luz azul — nunca um
+     retângulo de imagem quebrada. */
+  .quem__moldura--sem-foto::after {
+    content: 'Careca Chaves';
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--color-azul-brilho);
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .quem__assinatura {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    text-align: center;
+  }
+
+  .quem__assinatura strong {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .quem__assinatura span {
+    color: var(--color-azul-brilho);
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* --- Provas ----------------------------------------------------------- */
+  .provas {
+    list-style: none;
+    margin: 34px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+
+  .prova {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    padding: 18px 20px;
+    background: rgb(255 255 255 / 0.028);
+    border: 1px solid var(--color-borda);
+    border-radius: 14px;
+  }
+
+  .prova__icone {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    background: rgb(30 144 255 / 0.12);
+    border: 1px solid rgb(30 144 255 / 0.3);
+    color: var(--color-azul-brilho);
+  }
+
+  .prova__titulo {
+    margin: 0 0 4px;
+    font-size: 1.12rem;
+    text-transform: uppercase;
+  }
+
+  .prova__texto {
+    margin: 0;
+    color: var(--color-texto-suave);
+    font-size: 0.96rem;
+  }
+
+  .quem__acao {
+    margin-top: 28px;
+  }
+
+  @media (min-width: 900px) {
+    .quem {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 56px;
+    }
+
+    .quem__retrato {
+      position: sticky;
+      top: 110px;
+    }
+
+    .provas {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

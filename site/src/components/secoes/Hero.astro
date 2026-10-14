@@ -1,0 +1,212 @@
+---
+import BotaoLigar from '../ui/BotaoLigar.astro';
+import BotaoZap from '../ui/BotaoZap.astro';
+import RelogioAoVivo from '../ui/RelogioAoVivo.astro';
+import Icone from '../ui/Icone.astro';
+import { negocio } from '../../data/negocio';
+
+/** Provas que podem ser conferidas por qualquer um — nenhuma inventada. */
+const selos = [
+  { icone: 'relogio' as const, texto: '24h, todos os dias' },
+  { icone: 'local' as const, texto: 'Base em Copacabana' },
+  { icone: 'escudo' as const, texto: `CNPJ ativo desde ${negocio.atuandoDesde}` },
+];
+---
+
+<section class="hero" id="conteudo">
+  <!-- Camadas de fundo. Tudo desenhado em CSS: o hero continua de pé mesmo
+       que a imagem demore ou falhe, e não há nada bloqueando a primeira pintura. -->
+  <div class="hero__fundo" aria-hidden="true">
+    <div class="hero__grade"></div>
+    <div class="hero__luz hero__luz--azul"></div>
+    <div class="hero__luz hero__luz--ambar"></div>
+  </div>
+
+  <div class="area hero__interno">
+    <RelogioAoVivo />
+
+    <h1 class="hero__titulo">
+      <span class="hero__titulo-linha">Chaveiro 24 horas no Rio</span>
+      <span class="hero__titulo-forte">A emergência não escolhe hora.</span>
+    </h1>
+
+    <p class="hero__texto">
+      Ficou do lado de fora, perdeu a chave ou a fechadura travou? Eu vou até você,
+      abro sem arrombar e você entra. Atendimento de madrugada, fim de semana e feriado
+      em Copacabana, Zona Sul e boa parte do Rio.
+    </p>
+
+    <div class="hero__acoes">
+      <BotaoLigar texto="Ligar agora" comNumero class="hero__botao" />
+      <BotaoZap texto="Chamar no WhatsApp" variante="fantasma" class="hero__botao" />
+    </div>
+
+    <ul class="hero__selos">
+      {
+        selos.map((selo) => (
+          <li>
+            <Icone nome={selo.icone} tamanho={17} />
+            {selo.texto}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-borda);
+  }
+
+  .hero__interno {
+    position: relative;
+    z-index: 2;
+    padding-block: clamp(56px, 11vw, 112px) clamp(56px, 9vw, 96px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+
+  /* --- Fundo ------------------------------------------------------------ */
+  .hero__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(120% 90% at 78% 8%, #16233a 0%, transparent 58%),
+      linear-gradient(180deg, #0c1016 0%, var(--color-grafite) 70%);
+  }
+
+  /* Grade fina lembrando chapa de oficina. Dá textura sem pesar um byte
+     de imagem. */
+  .hero__grade {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(90 130 180 / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(90 130 180 / 0.06) 1px, transparent 1px);
+    background-size: 58px 58px;
+    mask-image: radial-gradient(85% 70% at 50% 24%, #000 25%, transparent 78%);
+  }
+
+  .hero__luz {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.5;
+  }
+
+  .hero__luz--azul {
+    width: min(620px, 85vw);
+    height: min(620px, 85vw);
+    top: -24%;
+    right: -14%;
+    background: radial-gradient(circle, rgb(30 144 255 / 0.55), transparent 68%);
+  }
+
+  .hero__luz--ambar {
+    width: min(360px, 60vw);
+    height: min(360px, 60vw);
+    bottom: -18%;
+    left: -12%;
+    background: radial-gradient(circle, rgb(255 122 26 / 0.26), transparent 70%);
+  }
+
+
+  /* --- Tipografia -------------------------------------------------------- */
+  .hero__titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .hero__titulo-linha {
+    font-family: var(--font-corpo);
+    font-size: clamp(0.92rem, 2.3vw, 1.05rem);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-azul-brilho);
+  }
+
+  /* line-height 1 é obrigatório aqui: o degradê é pintado por
+     `background-clip: text` e só preenche a caixa da linha — com valor menor,
+     o topo das letras fica sem tinta e parece cortado. */
+  .hero__titulo-forte {
+    font-size: clamp(2.6rem, 8.2vw, 5rem);
+    text-transform: uppercase;
+    line-height: 1;
+    max-width: 15ch;
+    text-wrap: balance;
+    background: linear-gradient(170deg, #ffffff 38%, #9fb3cc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .hero__texto {
+    color: var(--color-texto-suave);
+    font-size: clamp(1.02rem, 2.3vw, 1.18rem);
+    max-width: 54ch;
+    margin: 0;
+  }
+
+  .hero__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+  }
+
+  .hero__botao {
+    flex: 1 1 auto;
+    min-width: 212px;
+  }
+
+  .hero__selos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+  }
+
+  .hero__selos li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-texto-fraco);
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+
+  .hero__selos :global(svg) {
+    color: var(--color-azul);
+  }
+
+  @media (min-width: 760px) {
+    .hero__botao {
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+  }
+
+  /* Sem imagem à direita, o conteúdo recebe uma largura confortável de leitura
+     em vez de ser espremido contra a borda da tela. */
+  @media (min-width: 1000px) {
+    .hero__interno {
+      padding-block: 120px 104px;
+    }
+
+    .hero__texto {
+      font-size: 1.22rem;
+    }
+  }
+</style>

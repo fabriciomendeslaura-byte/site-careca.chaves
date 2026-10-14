@@ -1,0 +1,164 @@
+---
+import Logo from '../ui/Logo.astro';
+import Icone from '../ui/Icone.astro';
+import { negocio, enderecoCompleto } from '../../data/negocio';
+import { servicos } from '../../data/servicos';
+
+const anoAtual = new Date().getFullYear();
+---
+
+<footer class="rodape">
+  <div class="area rodape__grade">
+    <div class="rodape__marca">
+      <Logo tamanho={24} />
+      <p class="rodape__frase">
+        Chaveiro 24 horas no Rio de Janeiro. Abertura de porta, fechadura digital,
+        troca de segredo, cópia de controle e chaveiro automotivo.
+      </p>
+      <div class="rodape__redes">
+        <a href={negocio.redes.instagram} target="_blank" rel="noopener" aria-label="Instagram">
+          <Icone nome="instagram" tamanho={19} />
+        </a>
+        <a href={negocio.redes.facebook} target="_blank" rel="noopener" aria-label="Facebook">
+          <Icone nome="facebook" tamanho={19} />
+        </a>
+      </div>
+    </div>
+
+    <nav class="rodape__coluna" aria-label="Serviços">
+      <h2 class="rodape__titulo">Serviços</h2>
+      <ul>
+        {servicos.map((servico) => <li><a href="#servicos">{servico.titulo}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="rodape__coluna">
+      <h2 class="rodape__titulo">Contato</h2>
+      <ul>
+        <li>
+          <a href={negocio.telefone.link} class="rodape__fone">{negocio.telefone.exibicao}</a>
+        </li>
+        <li>{negocio.atendimento.resumo}</li>
+        <li>{enderecoCompleto}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="area rodape__base">
+    <p>
+      &copy; {anoAtual} {negocio.nome} — {negocio.razaoSocial}. CNPJ {negocio.cnpj}.
+    </p>
+    <p class="rodape__assinatura">Atendimento 24 horas, todos os dias, inclusive feriado.</p>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    background: #080a0e;
+    border-top: 1px solid var(--color-borda);
+    /* Folga extra no celular para o conteúdo não terminar embaixo da
+       barra fixa de contato. */
+    padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .rodape__grade {
+    display: grid;
+    gap: 36px;
+    padding-block: 54px 36px;
+  }
+
+  .rodape__frase {
+    margin: 16px 0 18px;
+    color: var(--color-texto-fraco);
+    font-size: 0.95rem;
+    max-width: 44ch;
+  }
+
+  .rodape__redes {
+    display: flex;
+    gap: 10px;
+  }
+
+  .rodape__redes a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1px solid var(--color-borda);
+    color: var(--color-texto-suave);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .rodape__redes a:hover {
+    border-color: var(--color-azul);
+    color: var(--color-azul-brilho);
+  }
+
+  .rodape__titulo {
+    font-family: var(--font-corpo);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--color-azul-brilho);
+    margin: 0 0 14px;
+  }
+
+  .rodape__coluna ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 9px;
+  }
+
+  .rodape__coluna li,
+  .rodape__coluna a {
+    color: var(--color-texto-fraco);
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+
+  .rodape__coluna a:hover {
+    color: var(--color-texto);
+  }
+
+  .rodape__fone {
+    font-weight: 700;
+    color: var(--color-texto) !important;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.1rem !important;
+  }
+
+  .rodape__base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    justify-content: space-between;
+    padding-block: 20px;
+    border-top: 1px solid var(--color-borda);
+  }
+
+  .rodape__base p {
+    margin: 0;
+    color: var(--color-texto-fraco);
+    font-size: 0.85rem;
+  }
+
+  .rodape__assinatura {
+    color: var(--color-azul-brilho) !important;
+    font-weight: 600;
+  }
+
+  @media (min-width: 820px) {
+    .rodape__grade {
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 48px;
+    }
+
+    .rodape {
+      padding-bottom: 0;
+    }
+  }
+</style>

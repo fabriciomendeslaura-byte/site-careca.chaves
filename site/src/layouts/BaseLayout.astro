@@ -1,0 +1,170 @@
+---
+import '../styles/global.css';
+import { negocio } from '../data/negocio';
+import { todosOsBairros } from '../data/cobertura';
+import { faq } from '../data/faq';
+import { servicos } from '../data/servicos';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+}
+
+const { titulo, descricao } = Astro.props;
+const urlCanonica = new URL(Astro.url.pathname, Astro.site).href;
+const imagemSocial = new URL('/compartilhamento.jpg', Astro.site).href;
+
+/**
+ * Dados estruturados (JSON-LD).
+ *
+ * E assim que o Google entende que isto nao e "um site qualquer", e sim um
+ * chaveiro, nesse endereco, aberto a essa hora, que atende esses bairros.
+ * E o que decide se ele aparece na busca de "chaveiro perto de mim".
+ */
+const dadosDoNegocio = {
+  '@context': 'https://schema.org',
+  '@type': 'Locksmith',
+  '@id': `${negocio.site}/#negocio`,
+  name: negocio.nome,
+  description: negocio.descricaoCurta,
+  url: negocio.site,
+  telephone: negocio.telefone.e164,
+  foundingDate: String(negocio.atuandoDesde),
+  priceRange: '$$',
+  image: imagemSocial,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: negocio.endereco.rua,
+    addressLocality: negocio.endereco.bairro,
+    addressRegion: negocio.endereco.estado,
+    postalCode: negocio.endereco.cep,
+    addressCountry: 'BR',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: negocio.endereco.geo.lat,
+    longitude: negocio.endereco.geo.lng,
+  },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '00:00',
+    closes: '23:59',
+  },
+  areaServed: todosOsBairros.map((bairro) => ({
+    '@type': 'City',
+    name: `${bairro}, Rio de Janeiro`,
+  })),
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Serviços de chaveiro',
+    itemListElement: servicos.map((servico) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: servico.titulo, description: servico.descricao },
+    })),
+  },
+  sameAs: [negocio.redes.instagram, negocio.redes.facebook],
+};
+
+const dadosDoFaq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.pergunta,
+    acceptedAnswer: { '@type': 'Answer', text: item.resposta },
+  })),
+};
+---
+
+<!doctype html>
+<html lang="pt-BR" class="sem-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={urlCanonica} />
+    <meta name="theme-color" content="#0A0C10" />
+    <meta name="author" content={negocio.nome} />
+    <meta name="geo.region" content="BR-RJ" />
+    <meta name="geo.placename" content="Copacabana, Rio de Janeiro" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Card bonito quando alguém manda o link no WhatsApp. É de lá que vem
+         boa parte da indicação em serviço local. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content={negocio.nome} />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={urlCanonica} />
+    <meta property="og:image" content={imagemSocial} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(dadosDoNegocio)} />
+    <script type="application/ld+json" set:html={JSON.stringify(dadosDoFaq)} />
+  </head>
+
+  <body>
+    <!-- Atalho para quem navega por teclado pular direto ao conteúdo. -->
+    <a href="#conteudo" class="pular-para-conteudo">Pular para o conteúdo</a>
+    <slot />
+
+    <script>
+      // Marca que o JavaScript rodou. Enquanto a classe `sem-js` existir, o CSS
+      // mantém tudo visível — site que depende de JS para aparecer é site que
+      // some quando o JS falha.
+      document.documentElement.classList.remove('sem-js');
+
+      const prefereMenosMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const aRevelar = document.querySelectorAll<HTMLElement>('.revelar');
+
+      if (prefereMenosMovimento || !('IntersectionObserver' in window)) {
+        aRevelar.forEach((elemento) => elemento.classList.add('visivel'));
+      } else {
+        const observador = new IntersectionObserver(
+          (entradas) => {
+            entradas.forEach((entrada) => {
+              if (!entrada.isIntersecting) return;
+              entrada.target.classList.add('visivel');
+              observador.unobserve(entrada.target); // anima uma vez só
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -60px 0px' }
+        );
+
+        aRevelar.forEach((elemento) => observador.observe(elemento));
+      }
+    </script>
+
+    <style>
+      .pular-para-conteudo {
+        position: absolute;
+        left: -9999px;
+        top: 12px;
+        z-index: 100;
+        background: var(--color-azul);
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 700;
+      }
+
+      .pular-para-conteudo:focus {
+        left: 12px;
+      }
+    </style>
+  </body>
+</html>

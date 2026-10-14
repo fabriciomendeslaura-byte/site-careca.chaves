@@ -1,0 +1,130 @@
+---
+import Icone from '../ui/Icone.astro';
+import { faq } from '../../data/faq';
+---
+
+<section class="secao" id="duvidas">
+  <div class="area duvidas">
+    <header class="revelar">
+      <p class="sobrancelha">
+        <Icone nome="check" tamanho={16} />
+        Antes de você perguntar
+      </p>
+      <h2 class="titulo-secao">Dúvidas que<br />todo mundo tem</h2>
+      <p class="texto-secao">
+        Se a sua não estiver aqui, me manda no WhatsApp. Respondo mesmo que você ainda
+        não vá contratar nada.
+      </p>
+    </header>
+
+    <!-- `details`/`summary` do próprio HTML: abre e fecha sem JavaScript,
+         funciona com leitor de tela e com busca pelo Ctrl+F do navegador. -->
+    <div class="duvidas__lista revelar">
+      {
+        faq.map((item) => (
+          <details class="duvida" name="duvidas">
+            <summary class="duvida__pergunta">
+              {item.pergunta}
+              <span class="duvida__sinal" aria-hidden="true" />
+            </summary>
+            <p class="duvida__resposta">{item.resposta}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .duvidas {
+    display: grid;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .duvidas__lista {
+    display: grid;
+    gap: 10px;
+  }
+
+  .duvida {
+    background: linear-gradient(165deg, var(--color-superficie-alta), var(--color-superficie));
+    border: 1px solid var(--color-borda);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+
+  .duvida[open] {
+    border-color: rgb(30 144 255 / 0.4);
+  }
+
+  .duvida__pergunta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 19px 21px;
+    font-weight: 700;
+    font-size: 1.04rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Remove o triângulo padrão do navegador, inclusive no Safari. */
+  .duvida__pergunta::-webkit-details-marker {
+    display: none;
+  }
+
+  .duvida__pergunta:hover {
+    color: var(--color-azul-brilho);
+  }
+
+  /* Sinal de mais que vira menos ao abrir, desenhado com duas barras. */
+  .duvida__sinal {
+    position: relative;
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+
+  .duvida__sinal::before,
+  .duvida__sinal::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 2.2px;
+    border-radius: 2px;
+    background: var(--color-azul);
+    transform: translateY(-50%);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+
+  .duvida__sinal::after {
+    transform: translateY(-50%) rotate(90deg);
+  }
+
+  .duvida[open] .duvida__sinal::after {
+    transform: translateY(-50%) rotate(0deg);
+    opacity: 0;
+  }
+
+  .duvida__resposta {
+    margin: 0;
+    padding: 0 21px 22px;
+    color: var(--color-texto-suave);
+    max-width: 68ch;
+  }
+
+  @media (min-width: 980px) {
+    .duvidas {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 54px;
+    }
+
+    .duvidas > header {
+      position: sticky;
+      top: 110px;
+    }
+  }
+</style>

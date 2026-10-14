@@ -1,0 +1,129 @@
+---
+import Logo from '../ui/Logo.astro';
+import Icone from '../ui/Icone.astro';
+import { negocio } from '../../data/negocio';
+
+const menu = [
+  { texto: 'Serviços', href: '#servicos' },
+  { texto: 'Como funciona', href: '#como-funciona' },
+  { texto: 'Onde atendo', href: '#cobertura' },
+  { texto: 'Dúvidas', href: '#duvidas' },
+];
+---
+
+<header class="cabecalho" id="cabecalho">
+  <div class="area cabecalho__interno">
+    <Logo tamanho={24} />
+
+    <nav class="cabecalho__menu" aria-label="Seções do site">
+      {menu.map((item) => <a href={item.href}>{item.texto}</a>)}
+    </nav>
+
+    <!-- No desktop o telefone aparece escrito, porque `tel:` raramente funciona
+         em computador: é o número que a pessoa vai digitar no celular dela. -->
+    <a href={negocio.telefone.link} class="cabecalho__fone">
+      <Icone nome="telefone" tamanho={18} />
+      <span>{negocio.telefone.exibicao}</span>
+    </a>
+  </div>
+</header>
+
+<style>
+  .cabecalho {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 50;
+    background: rgb(10 12 16 / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+  }
+
+  /* A borda só aparece depois que a página rola: no topo, o cabeçalho
+     funde com o hero; rolando, ele vira uma barra com limite claro. */
+  .cabecalho.rolou {
+    background: rgb(10 12 16 / 0.92);
+    border-bottom-color: var(--color-borda);
+  }
+
+  .cabecalho__interno {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-block: 14px;
+  }
+
+  .cabecalho__menu {
+    display: none;
+    gap: 28px;
+  }
+
+  .cabecalho__menu a {
+    color: var(--color-texto-suave);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.18s ease;
+  }
+
+  .cabecalho__menu a:hover {
+    color: var(--color-texto);
+  }
+
+  .cabecalho__fone {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    padding: 10px 18px;
+    border: 1px solid var(--color-borda-viva);
+    border-radius: var(--radius-pilula);
+    background: rgb(255 255 255 / 0.04);
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+
+  .cabecalho__fone:hover {
+    border-color: var(--color-azul);
+    background: rgb(30 144 255 / 0.12);
+  }
+
+  .cabecalho__fone span {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .cabecalho__fone span {
+      display: inline;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .cabecalho__menu {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  // Só alterna uma classe quando o estado muda de fato. Escrever no DOM a cada
+  // pixel de rolagem é o caminho mais curto para travar a página no celular.
+  const cabecalho = document.getElementById('cabecalho');
+
+  if (cabecalho) {
+    let rolado = false;
+
+    const aoRolar = () => {
+      const deveMarcar = window.scrollY > 12;
+      if (deveMarcar === rolado) return;
+      rolado = deveMarcar;
+      cabecalho.classList.toggle('rolou', deveMarcar);
+    };
+
+    aoRolar();
+    window.addEventListener('scroll', aoRolar, { passive: true });
+  }
+</script>

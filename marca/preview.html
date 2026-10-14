@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marca Careca Chaves — propostas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grafite:#0A0C10; --azul:#1E90FF; --brilho:#5CC8FF;
+    --ambar:#FF7A1A; --branco:#F5F7FA; --prata:#C9D4E2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--grafite);color:var(--branco);
+       font-family:Inter,system-ui,sans-serif;padding:32px 16px}
+  h1{font-size:20px;margin:0 0 4px}
+  p.sub{color:#8A94A6;margin:0 0 32px;font-size:14px}
+  h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+     color:var(--brilho);margin:40px 0 12px;font-weight:800}
+  .palco{background:#11151C;border:1px solid #1E2733;border-radius:16px;
+         padding:28px;display:flex;flex-wrap:wrap;gap:36px;align-items:center}
+  .palco.claro{background:#EEF2F7;border-color:#D6DEE8}
+  .nota{color:#8A94A6;font-size:13px;margin-top:8px;line-height:1.5;max-width:70ch}
+
+  /* O logotipo e feito em HTML+CSS, nao em imagem: fica nitido em qualquer tela,
+     pesa 0 kB e o nome da marca vira texto de verdade para o Google ler. */
+  .logo{display:inline-flex;align-items:center;gap:12px;text-decoration:none}
+  .logo .chave{width:1.9em;height:1.9em;color:var(--azul);flex:none}
+  .logo .texto{display:flex;flex-direction:column;line-height:.82;font-family:Anton,sans-serif}
+  .logo .l1{font-size:1em;letter-spacing:.02em;
+            background:linear-gradient(180deg,#fff 40%,var(--prata));
+            -webkit-background-clip:text;background-clip:text;color:transparent}
+  .logo .l2{font-size:1em;color:var(--azul);font-style:italic;letter-spacing:.06em}
+  .palco.claro .logo .l1{background:linear-gradient(180deg,#1B2430 40%,#4A5668);
+            -webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* Variacao B: nome numa linha so, para header mais baixo */
+  .logo.linha .texto{flex-direction:row;align-items:baseline;gap:.28em;line-height:1}
+
+  .mascote{width:3.4em;height:3.4em;border-radius:50%;object-fit:cover;
+           border:2px solid var(--azul);flex:none}
+
+  .g40{font-size:40px} .g28{font-size:28px} .g20{font-size:20px} .g14{font-size:14px}
+  .tamanhos{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap}
+  .tam{text-align:center}
+  .tam span{display:block;color:#8A94A6;font-size:11px;margin-top:10px}
+  .favicons{display:flex;gap:24px;align-items:flex-end}
+  .cores{display:flex;gap:10px;flex-wrap:wrap}
+  .cor{width:104px;border-radius:10px;overflow:hidden;border:1px solid #1E2733}
+  .cor i{display:block;height:52px}
+  .cor b{display:block;font-size:11px;padding:6px 8px 2px;font-weight:700}
+  .cor u{display:block;font-size:10px;padding:0 8px 8px;color:#8A94A6;text-decoration:none}
+</style>
+</head>
+<body>
+
+<h1>Marca Careca Chaves — propostas para o site</h1>
+<p class="sub">Abra no navegador e me diga qual direção prefere. Nada aqui é definitivo.</p>
+
+<h2>A · Logotipo empilhado (mais próximo da arte atual)</h2>
+<div class="palco">
+  <a class="logo g28" href="#">
+    <svg class="chave" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="21" cy="32" r="11"/><path d="M32 32h25"/><path d="M47 32v9"/><path d="M57 32v6"/>
+    </svg>
+    <span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span>
+  </a>
+</div>
+<p class="nota">A chave em traço continua legível até em 16px. CARECA com degradê prata e CHAVES em azul itálico herdam a arte dele, sem o contorno triplo que borra quando reduz.</p>
+
+<h2>B · Logotipo em linha (header baixo, rodapé)</h2>
+<div class="palco">
+  <a class="logo linha g28" href="#">
+    <svg class="chave" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="21" cy="32" r="11"/><path d="M32 32h25"/><path d="M47 32v9"/><path d="M57 32v6"/>
+    </svg>
+    <span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span>
+  </a>
+</div>
+
+<h2>C · Com o mascote — o rosto dele na marca</h2>
+<div class="palco">
+  <a class="logo g28" href="#">
+    <img class="mascote" src="../_material/mascote-original.png" alt="Gleiton, o Careca Chaves">
+    <span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span>
+  </a>
+</div>
+<p class="nota">O recorte circular aproveita o rosto e descarta o fundo cheio de detalhe. Na versão final eu removo o fundo de verdade, para ele aparecer solto no site.</p>
+
+<h2>Teste de redução — é aqui que logotipo ruim morre</h2>
+<div class="palco tamanhos">
+  <div class="tam">
+    <a class="logo g40" href="#"><svg class="chave" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="21" cy="32" r="11"/><path d="M32 32h25"/><path d="M47 32v9"/><path d="M57 32v6"/></svg><span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span></a>
+    <span>Hero / grande</span>
+  </div>
+  <div class="tam">
+    <a class="logo g20" href="#"><svg class="chave" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="21" cy="32" r="11"/><path d="M32 32h25"/><path d="M47 32v9"/><path d="M57 32v6"/></svg><span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span></a>
+    <span>Header real</span>
+  </div>
+  <div class="tam">
+    <a class="logo g14" href="#"><svg class="chave" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="21" cy="32" r="11"/><path d="M32 32h25"/><path d="M47 32v9"/><path d="M57 32v6"/></svg><span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span></a>
+    <span>Rodapé</span>
+  </div>
+</div>
+
+<h2>Em fundo claro (nota, adesivo, impresso)</h2>
+<div class="palco claro">
+  <a class="logo g28" href="#">
+    <svg class="chave" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="7"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="21" cy="32" r="11"/><path d="M32 32h25"/><path d="M47 32v9"/><path d="M57 32v6"/></svg>
+    <span class="texto"><span class="l1">CARECA</span><span class="l2">CHAVES</span></span>
+  </a>
+</div>
+
+<h2>Ícone / favicon — o que aparece na aba do navegador</h2>
+<div class="palco favicons">
+  <div class="tam"><img src="icone-escudo.svg" width="72" height="72" alt=""><span>72px</span></div>
+  <div class="tam"><img src="icone-escudo.svg" width="32" height="32" alt=""><span>32px</span></div>
+  <div class="tam"><img src="icone-escudo.svg" width="16" height="16" alt=""><span>16px (tamanho real)</span></div>
+</div>
+<p class="nota">O escudo comunica segurança sem depender de texto — texto some nesse tamanho.</p>
+
+<h2>Paleta do site</h2>
+<div class="palco">
+  <div class="cores">
+    <div class="cor"><i style="background:#0A0C10"></i><b>Grafite</b><u>#0A0C10</u></div>
+    <div class="cor"><i style="background:#1E90FF"></i><b>Azul elétrico</b><u>#1E90FF</u></div>
+    <div class="cor"><i style="background:#5CC8FF"></i><b>Azul brilho</b><u>#5CC8FF</u></div>
+    <div class="cor"><i style="background:#FF7A1A"></i><b>Âmbar CTA</b><u>#FF7A1A</u></div>
+    <div class="cor"><i style="background:#25D366"></i><b>Verde Zap</b><u>#25D366</u></div>
+    <div class="cor"><i style="background:#F5F7FA"></i><b>Branco</b><u>#F5F7FA</u></div>
+  </div>
+</div>
+
+</body>
+</html>

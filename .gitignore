@@ -1,0 +1,23 @@
+# Dependências — reinstaladas com `npm install`, nunca versionadas
+node_modules/
+
+# Saída de build — gerada a partir do código, não é fonte
+dist/
+.astro/
+.vercel/
+
+# Variáveis de ambiente (nenhuma hoje, mas o dia que houver não pode vazar)
+.env
+.env.*
+!.env.example
+
+# Sistema operacional e editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

@@ -1,0 +1,97 @@
+---
+/**
+ * Barra de acao fixa no rodape do celular.
+ *
+ * Esta e a peca de maior conversao do site. Quem chega aqui esta na rua, no
+ * escuro, com uma mao segurando o celular — nao pode precisar rolar para achar
+ * o botao de ligar. Ele fica sempre no polegar.
+ */
+import Icone from '../ui/Icone.astro';
+import { negocio, linkWhatsApp } from '../../data/negocio';
+---
+
+<div class="barra-fixa" role="group" aria-label="Contato rápido">
+  <a href={negocio.telefone.link} class="barra-fixa__botao barra-fixa__botao--ligar">
+    <Icone nome="telefone" tamanho={21} />
+    <span>
+      Ligar agora
+      <small>{negocio.telefone.exibicao}</small>
+    </span>
+  </a>
+
+  <a
+    href={linkWhatsApp()}
+    class="barra-fixa__botao barra-fixa__botao--zap"
+    target="_blank"
+    rel="noopener"
+    aria-label="Chamar no WhatsApp"
+  >
+    <Icone nome="whatsapp" tamanho={23} />
+  </a>
+</div>
+
+<style>
+  .barra-fixa {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: flex;
+    gap: 10px;
+    padding: 10px 14px;
+    /* A área segura evita que o botão fique embaixo da barra do iPhone. */
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgb(10 12 16 / 0.9);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--color-borda);
+  }
+
+  .barra-fixa__botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: var(--radius-pilula);
+    font-weight: 700;
+    text-decoration: none;
+    /* 54px é alvo de toque confortável para quem está com pressa. */
+    min-height: 54px;
+  }
+
+  .barra-fixa__botao--ligar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--color-ambar-claro), var(--color-ambar));
+    color: #26130a;
+    box-shadow: 0 8px 24px -10px rgb(255 122 26 / 0.7);
+  }
+
+  .barra-fixa__botao--ligar span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.12;
+    font-size: 1.02rem;
+  }
+
+  .barra-fixa__botao--ligar small {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.8;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .barra-fixa__botao--zap {
+    width: 58px;
+    flex: none;
+    background: var(--color-zap);
+    color: #05240f;
+  }
+
+  /* No desktop ela desaparece: lá o telefone do cabeçalho já resolve, e
+     `tel:` em computador geralmente não disca nada. */
+  @media (min-width: 900px) {
+    .barra-fixa {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import BarraFixaMobile from '../components/layout/BarraFixaMobile.astro';
+import FaixaRolante from '../components/ui/FaixaRolante.astro';
+import Hero from '../components/secoes/Hero.astro';
+import Servicos from '../components/secoes/Servicos.astro';
+import ComoFunciona from '../components/secoes/ComoFunciona.astro';
+import Cobertura from '../components/secoes/Cobertura.astro';
+import QuemAtende from '../components/secoes/QuemAtende.astro';
+import Duvidas from '../components/secoes/Duvidas.astro';
+import ChamadaFinal from '../components/secoes/ChamadaFinal.astro';
+
+const titulo = 'Chaveiro 24h em Copacabana e Zona Sul RJ | Careca Chaves';
+const descricao =
+  'Chaveiro 24 horas no Rio de Janeiro. Abertura de porta sem arrombar, fechadura digital, troca de segredo, cópia de controle e chaveiro automotivo. Base em Copacabana, atendimento na Zona Sul, Barra e Centro.';
+---
+
+<BaseLayout titulo={titulo} descricao={descricao}>
+  <Header />
+
+  <main>
+    <Hero />
+    <FaixaRolante />
+    <Servicos />
+    <ComoFunciona />
+    <Cobertura />
+    <QuemAtende />
+    <Duvidas />
+    <ChamadaFinal />
+  </main>
+
+  <Footer />
+  <BarraFixaMobile />
+</BaseLayout>
