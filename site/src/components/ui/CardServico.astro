@@ -1,6 +1,7 @@
 ---
 import Icone from './Icone.astro';
 import { linkWhatsApp } from '../../data/negocio';
+import { conteudoServicos } from '../../data/conteudo';
 import type { Servico } from '../../data/servicos';
 
 interface Props {
@@ -8,6 +9,10 @@ interface Props {
 }
 
 const { servico } = Astro.props;
+
+/* Nem todo serviço tem página própria ainda. Enquanto não tiver, o card leva
+   direto ao WhatsApp em vez de apontar para uma rota que não existe. */
+const pagina = conteudoServicos[servico.id];
 ---
 
 <article class:list={['servico', servico.destaque && 'servico--destaque', 'revelar']}>
@@ -32,10 +37,25 @@ const { servico } = Astro.props;
     <h3 class="servico__titulo">{servico.titulo}</h3>
     <p class="servico__descricao">{servico.descricao}</p>
 
-    <a href={linkWhatsApp(servico.mensagem)} class="servico__link" target="_blank" rel="noopener">
-      Falar sobre este serviço
-      <Icone nome="seta" tamanho={17} />
-    </a>
+    <div class="servico__acoes">
+      {
+        pagina && (
+          <a href={`/servicos/${pagina.slug}`} class="servico__link">
+            Saiba como funciona
+            <Icone nome="seta" tamanho={17} />
+          </a>
+        )
+      }
+      <a
+        href={linkWhatsApp(servico.mensagem)}
+        class:list={['servico__link', pagina && 'servico__link--secundario']}
+        target="_blank"
+        rel="noopener"
+      >
+        Falar no WhatsApp
+        <Icone nome="seta" tamanho={17} />
+      </a>
+    </div>
   </div>
 </article>
 
@@ -144,16 +164,32 @@ const { servico } = Astro.props;
     flex: 1;
   }
 
+  .servico__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 10px;
+  }
+
   .servico__link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-top: 8px;
     color: var(--color-azul-brilho);
     font-weight: 700;
     text-decoration: none;
     font-size: 0.96rem;
-    align-self: flex-start;
+  }
+
+  /* Quando há página do serviço, ela é o caminho principal e o WhatsApp vira
+     a opção secundária — dois links com o mesmo peso não guiam ninguém. */
+  .servico__link--secundario {
+    color: var(--color-texto-fraco);
+    font-weight: 600;
+  }
+
+  .servico__link--secundario:hover {
+    color: var(--color-texto-suave);
   }
 
   .servico__link :global(svg) {

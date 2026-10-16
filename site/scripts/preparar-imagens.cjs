@@ -1,9 +1,10 @@
 /**
  * Prepara as imagens de origem para o site.
  *
- * A arte que o cliente enviou tem 1,9 MB em PNG — carregar isso no celular de
- * alguem no 4G e inaceitavel. Aqui ela e recortada no circulo util, reduzida e
- * convertida para WebP, que costuma sair com menos de 10% do peso original.
+ * As artes chegam pesadas: a foto do Gleiton tem 4,4 MB e o mascote 1,9 MB.
+ * Carregar isso no celular de alguem no 4G e inaceitavel. Aqui cada uma e
+ * recortada, redimensionada e convertida para WebP, que costuma sair com menos
+ * de 5% do peso original.
  *
  * Rodar com:  node scripts/preparar-imagens.cjs
  */
@@ -12,65 +13,80 @@ const path = require('node:path');
 const sharp = require('sharp');
 
 const RAIZ = path.resolve(__dirname, '..');
-const ORIGEM = path.resolve(RAIZ, '..', '_material', 'mascote-original.png');
-const DESTINO = path.join(RAIZ, 'public', 'imagens');
+const MATERIAL = path.resolve(RAIZ, '..', '_material');
+const PUBLICO = path.join(RAIZ, 'public');
+const DESTINO = path.join(PUBLICO, 'imagens');
 
-async function principal() {
-  if (!fs.existsSync(ORIGEM)) {
-    console.error(`Não encontrei a arte de origem em: ${ORIGEM}`);
-    process.exitCode = 1;
-    return;
-  }
+function exigirArquivo(caminho) {
+  if (fs.existsSync(caminho)) return true;
+  console.error(`  faltando: ${path.relative(MATERIAL, caminho)}`);
+  return false;
+}
 
-  fs.mkdirSync(DESTINO, { recursive: true });
+/** Foto real do Gleiton na loja — o retrato da seção "quem vai te atender". */
+async function prepararFoto() {
+  const origem = path.join(MATERIAL, 'foto-careca-chaves.jpeg');
+  if (!exigirArquivo(origem)) return;
 
-  const { width = 0, height = 0 } = await sharp(ORIGEM).metadata();
-  console.log(`Origem: ${width}x${height}`);
+  // Retrato 3:4, na maior medida que a seção usa em tela grande. Gerar maior
+  // que isso só aumentaria o download sem o olho perceber diferença.
+  await sharp(origem)
+    .resize(760, 1013, { fit: 'cover', position: 'top' })
+    .webp({ quality: 82 })
+    .toFile(path.join(DESTINO, 'gleiton-loja.webp'));
 
-  // A arte e quadrada com o personagem na metade de cima. Recortamos a faixa
-  // que contem rosto e maos, descartando o letreiro — o nome da marca ja esta
-  // escrito no site como texto, repetir na imagem so pesa.
-  const ladoDoCorte = Math.round(Math.min(width, height) * 0.74);
-  const deslocamentoX = Math.round((width - ladoDoCorte) / 2);
+  // Card que aparece quando mandam o link no WhatsApp. Foto de pessoa converte
+  // mais que logo: quem vê reconhece que tem gente de verdade do outro lado.
+  // Sai em JPEG porque alguns prévisualizadores de link ainda falham com WebP.
+  await sharp(origem)
+    .resize(1200, 630, { fit: 'cover', position: 'top' })
+    .jpeg({ quality: 86 })
+    .toFile(path.join(PUBLICO, 'compartilhamento.jpg'));
+}
 
-  await sharp(ORIGEM)
-    .extract({ left: deslocamentoX, top: 0, width: ladoDoCorte, height: ladoDoCorte })
+/** Arte do mascote, usada como marca quadrada. */
+async function prepararMascote() {
+  const origem = path.join(MATERIAL, 'mascote-original.png');
+  if (!exigirArquivo(origem)) return;
+
+  const { width = 0, height = 0 } = await sharp(origem).metadata();
+
+  // A arte é quadrada com o personagem na metade de cima. Recortamos a faixa
+  // com rosto e mãos, descartando o letreiro — o nome da marca já está escrito
+  // no site como texto, repetir na imagem só pesa.
+  const lado = Math.round(Math.min(width, height) * 0.74);
+  const deslocamentoX = Math.round((width - lado) / 2);
+
+  await sharp(origem)
+    .extract({ left: deslocamentoX, top: 0, width: lado, height: lado })
     .resize(640, 640, { fit: 'cover' })
     .webp({ quality: 82 })
     .toFile(path.join(DESTINO, 'gleiton.webp'));
 
-  // Versao quadrada completa, usada no card de compartilhamento do WhatsApp.
-  await sharp(ORIGEM)
+  await sharp(origem)
     .resize(1080, 1080, { fit: 'cover' })
     .webp({ quality: 80 })
     .toFile(path.join(DESTINO, 'marca-quadrada.webp'));
+}
 
-  // Card que aparece quando alguém manda o link no WhatsApp.
-  // Sai em JPEG, no formato 1200x630: é o que as redes esperam, e WebP ainda
-  // falha em alguns prévisualizadores de link.
-  const LARGURA_CARD = 1200;
-  const ALTURA_CARD = 630;
+async function principal() {
+  fs.mkdirSync(DESTINO, { recursive: true });
 
-  const personagem = await sharp(ORIGEM)
-    .extract({ left: deslocamentoX, top: 0, width: ladoDoCorte, height: ladoDoCorte })
-    .resize(ALTURA_CARD, ALTURA_CARD, { fit: 'cover' })
-    .toBuffer();
+  await prepararFoto();
+  await prepararMascote();
 
-  await sharp({
-    create: {
-      width: LARGURA_CARD,
-      height: ALTURA_CARD,
-      channels: 3,
-      background: { r: 10, g: 12, b: 16 },
-    },
-  })
-    .composite([{ input: personagem, left: LARGURA_CARD - ALTURA_CARD, top: 0 }])
-    .jpeg({ quality: 86 })
-    .toFile(path.join(RAIZ, 'public', 'compartilhamento.jpg'));
+  const gerados = [
+    'imagens/gleiton-loja.webp',
+    'imagens/gleiton.webp',
+    'imagens/marca-quadrada.webp',
+    'compartilhamento.jpg',
+  ];
 
-  for (const arquivo of ['imagens/gleiton.webp', 'imagens/marca-quadrada.webp', 'compartilhamento.jpg']) {
-    const { size } = fs.statSync(path.join(RAIZ, 'public', arquivo));
-    console.log(`${arquivo}: ${(size / 1024).toFixed(0)} kB`);
+  console.log('');
+  for (const arquivo of gerados) {
+    const caminho = path.join(PUBLICO, arquivo);
+    if (!fs.existsSync(caminho)) continue;
+    console.log(`  ${arquivo.padEnd(32)} ${(fs.statSync(caminho).size / 1024).toFixed(0)} kB`);
   }
 }
 

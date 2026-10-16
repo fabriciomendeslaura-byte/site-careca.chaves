@@ -2,6 +2,7 @@
 import BotaoLigar from '../ui/BotaoLigar.astro';
 import BotaoZap from '../ui/BotaoZap.astro';
 import RelogioAoVivo from '../ui/RelogioAoVivo.astro';
+import SeloAvaliacoes from '../ui/SeloAvaliacoes.astro';
 import Icone from '../ui/Icone.astro';
 import { negocio } from '../../data/negocio';
 
@@ -23,7 +24,10 @@ const selos = [
   </div>
 
   <div class="area hero__interno">
-    <RelogioAoVivo />
+    <div class="hero__selos-topo">
+      <RelogioAoVivo />
+      <SeloAvaliacoes />
+    </div>
 
     <h1 class="hero__titulo">
       <span class="hero__titulo-linha">Chaveiro 24 horas no Rio</span>
@@ -119,6 +123,12 @@ const selos = [
 
 
   /* --- Tipografia -------------------------------------------------------- */
+  .hero__selos-topo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   .hero__titulo {
     display: flex;
     flex-direction: column;

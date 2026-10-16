@@ -1,0 +1,69 @@
+---
+/**
+ * Trilha de navegacao (breadcrumb).
+ *
+ * Serve a duas pessoas ao mesmo tempo: o visitante, que entende onde esta e
+ * volta com um clique, e o Google, que usa a mesma estrutura para mostrar o
+ * caminho em vez da URL crua no resultado da busca.
+ */
+import Icone from './Icone.astro';
+
+interface Props {
+  /** Do mais geral para o mais especifico. O ultimo item e a pagina atual. */
+  caminho: { texto: string; href?: string }[];
+}
+
+const { caminho } = Astro.props;
+---
+
+<nav class="trilha" aria-label="Você está em">
+  <ol>
+    {
+      caminho.map((item, indice) => (
+        <li>
+          {item.href ? <a href={item.href}>{item.texto}</a> : <span aria-current="page">{item.texto}</span>}
+          {indice < caminho.length - 1 && <Icone nome="seta" tamanho={13} class="trilha__seta" />}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .trilha ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.86rem;
+  }
+
+  .trilha li {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--color-texto-fraco);
+  }
+
+  .trilha a {
+    color: var(--color-texto-suave);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .trilha a:hover {
+    color: var(--color-azul-brilho);
+  }
+
+  .trilha span[aria-current] {
+    color: var(--color-azul-brilho);
+    font-weight: 600;
+  }
+
+  .trilha__seta {
+    opacity: 0.4;
+  }
+</style>

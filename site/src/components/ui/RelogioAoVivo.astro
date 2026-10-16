@@ -67,18 +67,28 @@ const agoraNoRio = new Intl.DateTimeFormat('pt-BR', {
 </style>
 
 <script>
-  // Acerta pelo relógio do visitante e segue atualizando de minuto em minuto.
-  const campoHora = document.querySelector<HTMLTimeElement>('[data-relogio-hora]');
+  // querySelectorAll, e não querySelector: a página tem mais de um relógio (um
+  // no topo e um na chamada final). Com o seletor singular, só o primeiro era
+  // atualizado e o outro ficava parado na hora em que o site foi gerado.
+  const camposDeHora = document.querySelectorAll<HTMLTimeElement>('[data-relogio-hora]');
 
-  if (campoHora) {
+  if (camposDeHora.length > 0) {
+    const formatador = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
     const escreverHora = () => {
-      campoHora.textContent = new Intl.DateTimeFormat('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }).format(new Date());
+      const agora = formatador.format(new Date());
+      camposDeHora.forEach((campo) => {
+        campo.textContent = agora;
+      });
     };
 
     escreverHora();
     setInterval(escreverHora, 30_000);
+
+    // O navegador congela temporizadores de aba em segundo plano. Sem isto, quem
+    // deixa a aba aberta e volta depois encontra a hora de quando saiu.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) escreverHora();
+    });
   }
 </script>

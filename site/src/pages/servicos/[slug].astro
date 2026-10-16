@@ -1,0 +1,321 @@
+---
+/**
+ * Pagina de um servico.
+ *
+ * Uma rota dinamica gera todas as paginas de servico, em vez de um arquivo
+ * copiado por servico. Quando a gente mudar o layout, muda aqui e vale para
+ * todas — e nenhuma fica para tras com o desenho velho.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import BarraFixaMobile from '../../components/layout/BarraFixaMobile.astro';
+import Duvidas from '../../components/secoes/Duvidas.astro';
+import ChamadaFinal from '../../components/secoes/ChamadaFinal.astro';
+import Trilha from '../../components/ui/Trilha.astro';
+import Icone from '../../components/ui/Icone.astro';
+import BotaoLigar from '../../components/ui/BotaoLigar.astro';
+import BotaoZap from '../../components/ui/BotaoZap.astro';
+import { servicos } from '../../data/servicos';
+import { conteudoServicos } from '../../data/conteudo';
+import { negocio } from '../../data/negocio';
+
+export function getStaticPaths() {
+  // So entra no ar o servico que ja tem conteudo escrito. Assim da para
+  // publicar uma pagina de cada vez, sem link apontando para o vazio.
+  return servicos
+    .filter((servico) => servico.id in conteudoServicos)
+    .map((servico) => ({
+      params: { slug: conteudoServicos[servico.id]!.slug },
+      props: { servico, conteudo: conteudoServicos[servico.id]! },
+    }));
+}
+
+const { servico, conteudo } = Astro.props;
+const urlDaPagina = new URL(`/servicos/${conteudo.slug}`, Astro.site).href;
+
+const trilha = [
+  { texto: 'Início', href: '/' },
+  { texto: 'Serviços', href: '/#servicos' },
+  { texto: servico.titulo },
+];
+
+/** Diz ao Google o caminho da página, em vez de ele exibir a URL crua. */
+const dadosDaTrilha = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: trilha.map((item, indice) => ({
+    '@type': 'ListItem',
+    position: indice + 1,
+    name: item.texto,
+    ...(item.href ? { item: new URL(item.href, Astro.site).href } : {}),
+  })),
+};
+
+const dadosDoServico = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: servico.titulo,
+  description: conteudo.descricaoSeo,
+  url: urlDaPagina,
+  serviceType: servico.titulo,
+  provider: { '@id': `${negocio.site}/#negocio` },
+  areaServed: { '@type': 'City', name: 'Rio de Janeiro' },
+  availableChannel: {
+    '@type': 'ServiceChannel',
+    servicePhone: negocio.telefone.e164,
+    serviceUrl: urlDaPagina,
+  },
+};
+
+/** Os outros serviços, para quem caiu aqui e precisava de outra coisa. */
+const outrosServicos = servicos.filter((item) => item.id !== servico.id);
+---
+
+<BaseLayout
+  titulo={conteudo.tituloSeo}
+  descricao={conteudo.descricaoSeo}
+  perguntas={conteudo.perguntas}
+  dadosExtras={[dadosDaTrilha, dadosDoServico]}
+>
+  <Header />
+
+  <main id="conteudo">
+    <section class="topo">
+      <div class="topo__fundo" aria-hidden="true"></div>
+
+      <div class="area topo__interno">
+        <Trilha caminho={trilha} />
+
+        <p class="sobrancelha topo__marcador">
+          <Icone nome={servico.icone} tamanho={17} />
+          Chaveiro 24h no Rio
+        </p>
+
+        <h1 class="topo__titulo">{conteudo.h1}</h1>
+        <p class="topo__chamada">{conteudo.chamada}</p>
+
+        <div class="topo__acoes">
+          <BotaoLigar texto="Ligar agora" comNumero />
+          <BotaoZap texto="Mandar foto da porta" mensagem={servico.mensagem} variante="fantasma" />
+        </div>
+      </div>
+    </section>
+
+    <article class="secao">
+      <div class="area texto-longo">
+        {
+          conteudo.secoes.map((secao) => (
+            <section class="bloco revelar">
+              <h2 class="bloco__titulo">{secao.titulo}</h2>
+              {secao.paragrafos.map((paragrafo) => (
+                <p>{paragrafo}</p>
+              ))}
+              {secao.itens && (
+                <ul class="bloco__lista">
+                  {secao.itens.map((item) => (
+                    <li>
+                      <Icone nome="check" tamanho={17} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </article>
+
+    <Duvidas perguntas={conteudo.perguntas} titulo="Dúvidas sobre<br />este serviço" />
+
+    <section class="secao secao--escura">
+      <div class="area">
+        <h2 class="titulo-secao revelar">Outros serviços</h2>
+        <ul class="outros revelar">
+          {
+            outrosServicos.map((item) => (
+              <li>
+                {item.id in conteudoServicos ? (
+                  <a href={`/servicos/${conteudoServicos[item.id]!.slug}`}>
+                    <Icone nome={item.icone} tamanho={19} />
+                    {item.titulo}
+                  </a>
+                ) : (
+                  <a href="/#servicos">
+                    <Icone nome={item.icone} tamanho={19} />
+                    {item.titulo}
+                  </a>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <ChamadaFinal />
+  </main>
+
+  <Footer />
+  <BarraFixaMobile />
+</BaseLayout>
+
+<style>
+  /* --- Topo -------------------------------------------------------------- */
+  .topo {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-borda);
+  }
+
+  .topo__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(90% 80% at 80% 0%, rgb(30 144 255 / 0.2), transparent 62%),
+      linear-gradient(180deg, #0c1016, var(--color-grafite));
+  }
+
+  .topo__interno {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-block: 28px clamp(48px, 7vw, 76px);
+  }
+
+  .topo__marcador {
+    margin: 10px 0 0;
+  }
+
+  .topo__titulo {
+    margin: 0;
+    font-size: clamp(2.2rem, 6.6vw, 3.9rem);
+    text-transform: uppercase;
+    line-height: 1;
+    max-width: 17ch;
+    background: linear-gradient(170deg, #ffffff 40%, #9fb3cc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .topo__chamada {
+    margin: 0;
+    color: var(--color-texto-suave);
+    font-size: clamp(1.02rem, 2.2vw, 1.16rem);
+    max-width: 58ch;
+  }
+
+  .topo__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .topo__acoes > :global(*) {
+    flex: 1 1 auto;
+    min-width: 212px;
+  }
+
+  @media (min-width: 700px) {
+    .topo__acoes > :global(*) {
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+  }
+
+  /* --- Corpo do texto ----------------------------------------------------- */
+  /* Largura de leitura confortável: linha longa demais faz o olho perder a
+     próxima linha ao voltar. */
+  .texto-longo {
+    max-width: 74ch;
+  }
+
+  .bloco + .bloco {
+    margin-top: 44px;
+  }
+
+  .bloco__titulo {
+    font-size: clamp(1.55rem, 3.6vw, 2.1rem);
+    text-transform: uppercase;
+    margin: 0 0 16px;
+    color: var(--color-texto);
+  }
+
+  .bloco p {
+    color: var(--color-texto-suave);
+    margin: 0 0 14px;
+  }
+
+  .bloco__lista {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .bloco__lista li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--color-texto-suave);
+    padding: 14px 16px;
+    background: rgb(255 255 255 / 0.03);
+    border: 1px solid var(--color-borda);
+    border-radius: 12px;
+  }
+
+  .bloco__lista :global(svg) {
+    color: var(--color-azul-brilho);
+    flex: none;
+    margin-top: 3px;
+  }
+
+  /* --- Outros serviços ---------------------------------------------------- */
+  .outros {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .outros a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid var(--color-borda);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.03);
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .outros a:hover {
+    border-color: var(--color-azul);
+    background: rgb(30 144 255 / 0.08);
+  }
+
+  .outros :global(svg) {
+    color: var(--color-azul-brilho);
+    flex: none;
+  }
+
+  @media (min-width: 720px) {
+    .outros {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

@@ -1,6 +1,14 @@
 ---
 import Icone from '../ui/Icone.astro';
-import { faq } from '../../data/faq';
+import { faq, type Pergunta } from '../../data/faq';
+
+interface Props {
+  /** Sem isto, mostra as perguntas gerais da home. */
+  perguntas?: Pergunta[];
+  titulo?: string;
+}
+
+const { perguntas = faq, titulo = 'Dúvidas que<br />todo mundo tem' } = Astro.props;
 ---
 
 <section class="secao" id="duvidas">
@@ -10,7 +18,7 @@ import { faq } from '../../data/faq';
         <Icone nome="check" tamanho={16} />
         Antes de você perguntar
       </p>
-      <h2 class="titulo-secao">Dúvidas que<br />todo mundo tem</h2>
+      <h2 class="titulo-secao" set:html={titulo} />
       <p class="texto-secao">
         Se a sua não estiver aqui, me manda no WhatsApp. Respondo mesmo que você ainda
         não vá contratar nada.
@@ -21,7 +29,7 @@ import { faq } from '../../data/faq';
          funciona com leitor de tela e com busca pelo Ctrl+F do navegador. -->
     <div class="duvidas__lista revelar">
       {
-        faq.map((item) => (
+        perguntas.map((item) => (
           <details class="duvida" name="duvidas">
             <summary class="duvida__pergunta">
               {item.pergunta}

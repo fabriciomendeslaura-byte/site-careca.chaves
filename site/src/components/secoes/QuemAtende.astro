@@ -13,6 +13,11 @@ import { negocio } from '../../data/negocio';
  */
 const provas = [
   {
+    icone: 'check' as const,
+    titulo: `Nota ${negocio.avaliacoes.nota.toLocaleString('pt-BR', { minimumFractionDigits: 1 })} no Google`,
+    texto: `${negocio.avaliacoes.quantidade} avaliações de clientes reais no Perfil da Empresa no Google. Não são depoimentos escritos por nós: é só pesquisar "Careca Chaves" e conferir.`,
+  },
+  {
     icone: 'escudo' as const,
     titulo: 'Empresa registrada',
     texto: `CNPJ ${negocio.cnpj}, em situação ativa. Confira na Receita Federal antes de abrir sua porta para qualquer pessoa.`,
@@ -41,10 +46,10 @@ const provas = [
     <div class="quem__retrato revelar">
       <div class="quem__moldura">
         <img
-          src="/imagens/gleiton.webp"
-          alt="Ilustração de Gleiton, o Careca Chaves, segurando uma chave"
-          width="520"
-          height="520"
+          src="/imagens/gleiton-loja.webp"
+          alt="Gleiton, o Careca Chaves, na bancada da loja em Copacabana, com o painel de chaves ao fundo"
+          width="760"
+          height="1013"
           loading="lazy"
           decoding="async"
           onerror="this.closest('.quem__moldura').classList.add('quem__moldura--sem-foto')"
@@ -108,18 +113,20 @@ const provas = [
     gap: 16px;
   }
 
+  /* Retrato vertical em vez de círculo: foto de pessoa inteira recortada em
+     disco perde o corpo, o uniforme e a bancada — justamente o que prova que
+     existe uma loja de verdade atrás do telefone. */
   .quem__moldura {
     position: relative;
-    width: min(330px, 76vw);
-    aspect-ratio: 1;
-    border-radius: 50%;
+    width: min(370px, 82vw);
+    aspect-ratio: 3 / 4;
+    border-radius: 20px;
     display: grid;
     place-items: center;
-    background:
-      radial-gradient(circle at 50% 30%, rgb(30 144 255 / 0.3), transparent 62%),
-      linear-gradient(170deg, #16202c, #0d1219);
-    border: 2px solid rgb(30 144 255 / 0.5);
-    box-shadow: 0 0 70px -18px rgb(30 144 255 / 0.65);
+    background: linear-gradient(170deg, #16202c, #0d1219);
+    border: 1px solid rgb(30 144 255 / 0.4);
+    box-shadow: 0 30px 70px -30px rgb(0 0 0 / 0.9),
+                0 0 80px -34px rgb(30 144 255 / 0.75);
     overflow: hidden;
   }
 
@@ -129,10 +136,24 @@ const provas = [
     object-fit: cover;
   }
 
+  /* Véu azul por cima da foto, para ela pertencer à paleta do site em vez de
+     parecer uma figura colada de outro lugar. */
+  .quem__moldura::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(185deg, transparent 52%, rgb(10 12 16 / 0.72)),
+                radial-gradient(120% 70% at 50% 0%, rgb(30 144 255 / 0.16), transparent 60%);
+  }
+
   /* Sem a imagem, a moldura vira um disco com a luz azul — nunca um
      retângulo de imagem quebrada. */
   .quem__moldura--sem-foto::after {
     content: 'Careca Chaves';
+    position: relative;
+    z-index: 3;
     font-family: var(--font-display);
     font-size: 1.5rem;
     text-transform: uppercase;

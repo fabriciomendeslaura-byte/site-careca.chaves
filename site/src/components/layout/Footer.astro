@@ -3,8 +3,17 @@ import Logo from '../ui/Logo.astro';
 import Icone from '../ui/Icone.astro';
 import { negocio, enderecoCompleto } from '../../data/negocio';
 import { servicos } from '../../data/servicos';
+import { conteudoServicos } from '../../data/conteudo';
 
 const anoAtual = new Date().getFullYear();
+
+/* Cada serviço aponta para a própria página quando ela existe. Mandar tudo
+   para a âncora da home desperdiçaria o link — e link interno é como o Google
+   descobre e valoriza as páginas de dentro do site. */
+const linksDeServico = servicos.map((servico) => ({
+  titulo: servico.titulo,
+  href: conteudoServicos[servico.id] ? `/servicos/${conteudoServicos[servico.id]!.slug}` : '/#servicos',
+}));
 ---
 
 <footer class="rodape">
@@ -28,7 +37,7 @@ const anoAtual = new Date().getFullYear();
     <nav class="rodape__coluna" aria-label="Serviços">
       <h2 class="rodape__titulo">Serviços</h2>
       <ul>
-        {servicos.map((servico) => <li><a href="#servicos">{servico.titulo}</a></li>)}
+        {linksDeServico.map((item) => <li><a href={item.href}>{item.titulo}</a></li>)}
       </ul>
     </nav>
 
@@ -38,7 +47,10 @@ const anoAtual = new Date().getFullYear();
         <li>
           <a href={negocio.telefone.link} class="rodape__fone">{negocio.telefone.exibicao}</a>
         </li>
-        <li>{negocio.atendimento.resumo}</li>
+        <li class="rodape__horario">
+          <strong>Aberto 24 horas</strong>
+          <span>Todos os dias, inclusive fim de semana e feriado</span>
+        </li>
         <li>{enderecoCompleto}</li>
       </ul>
     </div>
@@ -48,7 +60,7 @@ const anoAtual = new Date().getFullYear();
     <p>
       &copy; {anoAtual} {negocio.nome} — {negocio.razaoSocial}. CNPJ {negocio.cnpj}.
     </p>
-    <p class="rodape__assinatura">Atendimento 24 horas, todos os dias, inclusive feriado.</p>
+    <p class="rodape__assinatura">Chaveiro registrado em Copacabana desde {negocio.atuandoDesde}.</p>
   </div>
 </footer>
 
@@ -129,6 +141,17 @@ const anoAtual = new Date().getFullYear();
     color: var(--color-texto) !important;
     font-variant-numeric: tabular-nums;
     font-size: 1.1rem !important;
+  }
+
+  .rodape__horario {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .rodape__horario strong {
+    color: var(--color-zap);
+    font-size: 0.98rem;
   }
 
   .rodape__base {

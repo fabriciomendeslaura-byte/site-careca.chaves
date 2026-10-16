@@ -8,9 +8,13 @@ import { servicos } from '../data/servicos';
 interface Props {
   titulo: string;
   descricao: string;
+  /** Perguntas desta página. Sem isso, valem as da home. */
+  perguntas?: { pergunta: string; resposta: string }[];
+  /** Blocos extras de dados estruturados, como a trilha de navegação. */
+  dadosExtras?: Record<string, unknown>[];
 }
 
-const { titulo, descricao } = Astro.props;
+const { titulo, descricao, perguntas = faq, dadosExtras = [] } = Astro.props;
 const urlCanonica = new URL(Astro.url.pathname, Astro.site).href;
 const imagemSocial = new URL('/compartilhamento.jpg', Astro.site).href;
 
@@ -69,7 +73,7 @@ const dadosDoNegocio = {
 const dadosDoFaq = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
-  mainEntity: faq.map((item) => ({
+  mainEntity: perguntas.map((item) => ({
     '@type': 'Question',
     name: item.pergunta,
     acceptedAnswer: { '@type': 'Answer', text: item.resposta },
@@ -115,6 +119,7 @@ const dadosDoFaq = {
 
     <script type="application/ld+json" set:html={JSON.stringify(dadosDoNegocio)} />
     <script type="application/ld+json" set:html={JSON.stringify(dadosDoFaq)} />
+    {dadosExtras.map((bloco) => <script type="application/ld+json" set:html={JSON.stringify(bloco)} />)}
   </head>
 
   <body>

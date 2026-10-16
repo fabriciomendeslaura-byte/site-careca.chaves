@@ -1,0 +1,94 @@
+---
+/**
+ * Selo com a nota real do Perfil da Empresa no Google.
+ *
+ * Esta e a unica prova social do site, e so existe porque e conferivel: o selo
+ * leva ao perfil, onde qualquer pessoa ve a mesma nota e as mesmas avaliacoes.
+ * Nenhum depoimento foi escrito por nos.
+ */
+import { negocio } from '../../data/negocio';
+
+interface Props {
+  /** `destaque` usa fundo e borda; `discreto` fica em linha com outros selos. */
+  variante?: 'destaque' | 'discreto';
+  class?: string;
+}
+
+const { variante = 'destaque', class: classe = '' } = Astro.props;
+const { nota, quantidade, link } = negocio.avaliacoes;
+
+const notaEscrita = nota.toLocaleString('pt-BR', { minimumFractionDigits: 1 });
+const Envoltorio = link ? 'a' : 'div';
+---
+
+<Envoltorio
+  class:list={['selo', `selo--${variante}`, classe]}
+  {...link ? { href: link, target: '_blank', rel: 'noopener' } : {}}
+>
+  <span class="selo__estrelas" aria-hidden="true">
+    {
+      Array.from({ length: 5 }).map(() => (
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+          <path d="m12 2 2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z" />
+        </svg>
+      ))
+    }
+  </span>
+
+  <span class="selo__texto">
+    <strong>{notaEscrita}</strong>
+    <span>{quantidade} avaliações no Google</span>
+  </span>
+</Envoltorio>
+
+<style>
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--color-texto-suave);
+  }
+
+  .selo--destaque {
+    padding: 9px 17px;
+    border-radius: var(--radius-pilula);
+    border: 1px solid rgb(255 193 7 / 0.3);
+    background: rgb(255 193 7 / 0.07);
+  }
+
+  .selo--destaque:hover {
+    border-color: rgb(255 193 7 / 0.55);
+  }
+
+  .selo__estrelas {
+    display: inline-flex;
+    gap: 1px;
+    /* Amarelo da estrela do próprio Google: trocar por azul faria o selo
+       perder o reconhecimento imediato que é justamente o valor dele. */
+    color: #ffc107;
+    flex: none;
+  }
+
+  .selo__texto {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .selo__texto strong {
+    color: var(--color-texto);
+    font-size: 1.04rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .selo--discreto {
+    font-weight: 600;
+  }
+
+  .selo--discreto .selo__texto {
+    font-size: 0.9rem;
+  }
+</style>

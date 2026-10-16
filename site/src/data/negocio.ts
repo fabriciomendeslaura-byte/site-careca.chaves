@@ -36,7 +36,10 @@ export const negocio = {
     bairro: 'Copacabana',
     cidade: 'Rio de Janeiro',
     estado: 'RJ',
-    cep: '22031-072',
+    /* 22031-071 é o que consta no Perfil da Empresa no Google. A Receita traz
+       22031-072 para o CNPJ. Mantemos igual ao Google: é de lá que vem o
+       endereço que o cliente vê e que o próprio Google cruza com o site. */
+    cep: '22031-071',
     /** Aproximado (Copacabana). Acertar pelo pino real do Google Meu Negócio. */
     geo: { lat: -22.9668, lng: -43.1884 },
   },
@@ -44,6 +47,28 @@ export const negocio = {
   cnpj: '46.690.937/0001-37',
   razaoSocial: 'Gleiton Berlanda da Silva',
   atuandoDesde: 2022,
+
+  /**
+   * Avaliacoes reais do Perfil da Empresa no Google.
+   *
+   * E a unica prova social do site, e ela existe porque e verificavel: quem
+   * clicar no link ve a mesma nota e o mesmo numero. Nada aqui e estimado.
+   *
+   * ⚠️ NUMERO CONGELADO NO CODIGO. Conferido em 16/10/2026. Como ele so cresce,
+   * ficar defasado subestima o Gleiton — nunca o contrario. Ainda assim, vale
+   * atualizar de tempos em tempos.
+   */
+  avaliacoes: {
+    nota: 5.0,
+    quantidade: 78,
+    conferidoEm: '16/10/2026',
+    /** Perfil no Google. E o mesmo link de avaliar, sem o `/review` no fim. */
+    link: 'https://g.page/r/CYXqUekp1ZUrEBM',
+    /** Abre direto a caixa de escrever avaliacao. Usado no pedido pos-servico. */
+    linkAvaliar: 'https://g.page/r/CYXqUekp1ZUrEBM/review',
+    /** Identificador do perfil, caso um dia a gente puxe as avaliacoes por API. */
+    placeId: 'ChIJW6XyaUXVmwARhepR6SnVlSs',
+  },
 
   atendimento: {
     resumo: '24 horas, todos os dias',
