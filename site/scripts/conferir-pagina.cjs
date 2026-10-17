@@ -164,6 +164,32 @@ const colisoes = [...repetidos('titulo'), ...repetidos('descricao')];
 colisoes.forEach((colisao) => console.log(`FALHOU  !! ${colisao}`));
 totalDeFalhas += colisoes.length;
 
+/**
+ * O robots.txt precisa apontar para um sitemap que exista.
+ *
+ * Esta conferencia nasceu de um erro real: o robots indicava sitemap.xml
+ * enquanto o arquivo gerado se chama sitemap-index.xml. Nada no build acusa
+ * isso — o buscador e que recebe 404 e segue sem o mapa do site.
+ */
+const robots = path.join(DIST, 'robots.txt');
+
+if (fs.existsSync(robots)) {
+  const indicados = [...fs.readFileSync(robots, 'utf8').matchAll(/Sitemap:\s*(\S+)/gi)].map(
+    (m) => m[1]
+  );
+
+  for (const url of indicados) {
+    const arquivo = path.join(DIST, new URL(url).pathname);
+
+    if (fs.existsSync(arquivo)) {
+      console.log(`ok   robots.txt aponta para ${path.basename(arquivo)}, que existe`);
+    } else {
+      console.log(`FALHOU  !! robots.txt aponta para ${url}, que não foi gerado`);
+      totalDeFalhas += 1;
+    }
+  }
+}
+
 console.log('');
 if (totalDeFalhas > 0) {
   console.log(`${resultados.length} página(s), ${totalDeFalhas} falha(s).`);

@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://chaveiro24horasrj.com.br/sitemap.xml
+# O arquivo chama-se sitemap-index.xml, e nao sitemap.xml: quem gera e a
+# integracao @astrojs/sitemap, que sempre produz um indice apontando para os
+# arquivos de verdade. Apontar para o nome errado aqui faz o buscador receber
+# um 404 e seguir sem o mapa do site.
+Sitemap: https://chaveiro24horasrj.com.br/sitemap-index.xml
