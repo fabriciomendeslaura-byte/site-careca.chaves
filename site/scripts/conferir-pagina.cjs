@@ -28,6 +28,15 @@ const ZAP_ESPERADO = '5521964621885';
  */
 const LIMITE_KB = 25;
 
+/**
+ * Arquivos .html que nao sao paginas do site.
+ *
+ * O Google e o Bing verificam a posse do dominio pedindo um arquivo com uma
+ * linha de texto dentro. Ele precisa existir e nao pode ser alterado — mas
+ * cobrar titulo, dados estruturados e botao de ligar dele nao faz sentido.
+ */
+const NAO_SAO_PAGINAS = /^(google[0-9a-f]+\.html|BingSiteAuth\.xml)$/i;
+
 /** Acha todo index.html gerado, em qualquer nivel de pasta. */
 function listarPaginas(pasta) {
   const encontradas = [];
@@ -35,7 +44,9 @@ function listarPaginas(pasta) {
   for (const item of fs.readdirSync(pasta, { withFileTypes: true })) {
     const caminho = path.join(pasta, item.name);
     if (item.isDirectory()) encontradas.push(...listarPaginas(caminho));
-    else if (item.name.endsWith('.html')) encontradas.push(caminho);
+    else if (item.name.endsWith('.html') && !NAO_SAO_PAGINAS.test(item.name)) {
+      encontradas.push(caminho);
+    }
   }
 
   return encontradas;
