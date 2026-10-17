@@ -15,6 +15,7 @@ interface Props {
 }
 
 const { titulo, descricao, perguntas = faq, dadosExtras = [] } = Astro.props;
+const ehAHome = Astro.url.pathname === '/';
 const urlCanonica = new URL(Astro.url.pathname, Astro.site).href;
 const imagemSocial = new URL('/compartilhamento.jpg', Astro.site).href;
 
@@ -55,10 +56,13 @@ const dadosDoNegocio = {
     opens: '00:00',
     closes: '23:59',
   },
-  areaServed: todosOsBairros.map((bairro) => ({
-    '@type': 'City',
-    name: `${bairro}, Rio de Janeiro`,
-  })),
+  /* A lista completa de bairros entra só na home. São mais de quarenta objetos,
+     e repeti-los em cada uma das onze páginas é peso sem retorno: para o Google,
+     uma declaração de área no perfil principal do negócio basta. As páginas de
+     bairro já trazem a própria área no bloco `Service` delas. */
+  areaServed: ehAHome
+    ? todosOsBairros.map((bairro) => ({ '@type': 'City', name: `${bairro}, Rio de Janeiro` }))
+    : { '@type': 'City', name: 'Rio de Janeiro' },
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
     name: 'Serviços de chaveiro',

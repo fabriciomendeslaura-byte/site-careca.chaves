@@ -1,0 +1,232 @@
+---
+/**
+ * Pagina de endereco nao encontrado.
+ *
+ * Sem este arquivo, quem erra a URL ve a pagina cinza padrao da hospedagem,
+ * sem telefone e sem saida. E um visitante que chegou ate aqui — muitas vezes
+ * pelo Google, com a porta trancada — e foi recebido por um beco sem saida.
+ *
+ * Aqui ele encontra o botao de ligar antes de qualquer explicacao.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import BarraFixaMobile from '../components/layout/BarraFixaMobile.astro';
+import BotaoLigar from '../components/ui/BotaoLigar.astro';
+import BotaoZap from '../components/ui/BotaoZap.astro';
+import Icone from '../components/ui/Icone.astro';
+import { servicos } from '../data/servicos';
+import { conteudoServicos } from '../data/conteudo';
+import { bairros } from '../data/bairros';
+---
+
+<BaseLayout
+  titulo="Página não encontrada | Careca Chaves"
+  descricao="Esta página não existe. Mas o chaveiro continua atendendo 24 horas no Rio de Janeiro."
+>
+  <Header />
+
+  <main id="conteudo">
+    <section class="erro">
+      <div class="erro__fundo" aria-hidden="true"></div>
+
+      <div class="area erro__interno">
+        <p class="erro__codigo" aria-hidden="true">404</p>
+
+        <h1 class="erro__titulo">Essa porta não abre</h1>
+
+        <p class="erro__texto">
+          O endereço que você digitou não existe aqui. Mas se o problema é uma porta
+          de verdade, isso eu resolvo — e a qualquer hora.
+        </p>
+
+        <div class="erro__acoes">
+          <BotaoLigar texto="Ligar agora" comNumero />
+          <BotaoZap texto="Chamar no WhatsApp" variante="fantasma" />
+        </div>
+      </div>
+    </section>
+
+    <section class="secao">
+      <div class="area">
+        <h2 class="titulo-secao revelar">Talvez você procurasse isto</h2>
+
+        <div class="atalhos revelar">
+          <div>
+            <h3 class="atalhos__titulo">Serviços</h3>
+            <ul>
+              {
+                servicos.map((servico) => (
+                  <li>
+                    <a href={conteudoServicos[servico.id] ? `/servicos/${conteudoServicos[servico.id]!.slug}` : '/#servicos'}>
+                      <Icone nome={servico.icone} tamanho={18} />
+                      {servico.titulo}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="atalhos__titulo">Onde eu atendo</h3>
+            <ul>
+              {
+                bairros.map((bairro) => (
+                  <li>
+                    <a href={`/chaveiro-${bairro.slug}`}>
+                      <Icone nome="local" tamanho={18} />
+                      {bairro.nome}
+                    </a>
+                  </li>
+                ))
+              }
+              <li>
+                <a href="/#cobertura">
+                  <Icone nome="seta" tamanho={18} />
+                  Ver todos os bairros
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <BarraFixaMobile />
+</BaseLayout>
+
+<style>
+  .erro {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-borda);
+  }
+
+  .erro__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(80% 70% at 70% 0%, rgb(30 144 255 / 0.18), transparent 62%),
+      linear-gradient(180deg, #0c1016, var(--color-grafite));
+  }
+
+  .erro__interno {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-block: clamp(56px, 9vw, 104px);
+  }
+
+  /* Número grande e vazado: marca o erro sem gritar com quem já está nervoso. */
+  .erro__codigo {
+    font-family: var(--font-display);
+    font-size: clamp(4.5rem, 15vw, 9rem);
+    line-height: 0.85;
+    margin: 0;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--color-azul);
+    opacity: 0.55;
+  }
+
+  .erro__titulo {
+    margin: 0;
+    font-size: clamp(2.1rem, 6.4vw, 3.6rem);
+    text-transform: uppercase;
+    line-height: 1;
+    background: linear-gradient(170deg, #ffffff 40%, #9fb3cc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .erro__texto {
+    margin: 0;
+    color: var(--color-texto-suave);
+    font-size: clamp(1.02rem, 2.2vw, 1.16rem);
+    max-width: 52ch;
+  }
+
+  .erro__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .erro__acoes > :global(*) {
+    flex: 1 1 auto;
+    min-width: 212px;
+  }
+
+  @media (min-width: 700px) {
+    .erro__acoes > :global(*) {
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+  }
+
+  /* --- Atalhos ----------------------------------------------------------- */
+  .atalhos {
+    display: grid;
+    gap: 32px;
+    margin-top: 32px;
+  }
+
+  .atalhos__titulo {
+    font-family: var(--font-corpo);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--color-azul-brilho);
+    margin: 0 0 14px;
+  }
+
+  .atalhos ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .atalhos a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px 15px;
+    border: 1px solid var(--color-borda);
+    border-radius: 11px;
+    background: rgb(255 255 255 / 0.03);
+    color: var(--color-texto-suave);
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .atalhos a:hover {
+    border-color: var(--color-azul);
+    color: var(--color-texto);
+  }
+
+  .atalhos :global(svg) {
+    color: var(--color-azul-brilho);
+    flex: none;
+  }
+
+  @media (min-width: 760px) {
+    .atalhos {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+  }
+</style>

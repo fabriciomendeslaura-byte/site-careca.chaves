@@ -12,11 +12,21 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 
 const DIST = path.resolve(__dirname, '..', 'dist');
 const TELEFONE_ESPERADO = '+5521964621885';
 const ZAP_ESPERADO = '5521964621885';
-const LIMITE_KB = 90;
+
+/**
+ * Orcamento de peso, em kB JA COMPRIMIDOS.
+ *
+ * A hospedagem comprime o HTML antes de enviar, entao o tamanho em disco nao
+ * e o que o celular baixa: 82 kB de HTML viram cerca de 13 kB na rede. Medir o
+ * arquivo cru vigia um numero que ninguem experimenta — e acusa problema onde
+ * nao ha, ou deixa passar onde ha.
+ */
+const LIMITE_KB = 25;
 
 /** Acha todo index.html gerado, em qualquer nivel de pasta. */
 function listarPaginas(pasta) {
@@ -90,10 +100,17 @@ function conferirPagina(arquivo) {
   const titulo = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
   const descricao = (html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || '';
 
-  const pesoKb = Buffer.byteLength(html) / 1024;
-  exigir(`peso abaixo de ${LIMITE_KB} kB (está em ${pesoKb.toFixed(0)})`, pesoKb < LIMITE_KB);
+  // Gzip como referência: é o que a hospedagem envia. O Brotli que a Vercel
+  // usa comprime um pouco mais, então esta medida é conservadora de propósito.
+  const pesoKb = zlib.gzipSync(Buffer.from(html)).length / 1024;
+  const pesoCruKb = Buffer.byteLength(html) / 1024;
 
-  return { rota, falhas, titulo, descricao, pesoKb };
+  exigir(
+    `peso abaixo de ${LIMITE_KB} kB comprimidos (está em ${pesoKb.toFixed(1)})`,
+    pesoKb < LIMITE_KB
+  );
+
+  return { rota, falhas, titulo, descricao, pesoKb, pesoCruKb };
 }
 
 // --- Execucao ---------------------------------------------------------------
@@ -105,9 +122,11 @@ if (!fs.existsSync(DIST)) {
 const resultados = listarPaginas(DIST).map(conferirPagina);
 let totalDeFalhas = 0;
 
-for (const { rota, falhas, pesoKb } of resultados) {
+for (const { rota, falhas, pesoKb, pesoCruKb } of resultados) {
   if (falhas.length === 0) {
-    console.log(`ok   ${rota.padEnd(32)} ${pesoKb.toFixed(0)} kB`);
+    console.log(
+      `ok   ${rota.padEnd(32)} ${pesoKb.toFixed(1).padStart(5)} kB na rede  (${pesoCruKb.toFixed(0)} kB em disco)`
+    );
   } else {
     totalDeFalhas += falhas.length;
     console.log(`FALHOU  ${rota}`);
