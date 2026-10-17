@@ -21,3 +21,8 @@ desktop.ini
 # Logs
 *.log
 npm-debug.log*
+
+# Imagens originais da IA: 4 a 8 MB cada, quase 50 MB no total.
+# Ficam no disco como material de origem; o que vai para o site sao as
+# versoes otimizadas em site/public/imagens, geradas por preparar-imagens.cjs
+_material/imagens-geradas/

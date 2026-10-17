@@ -22,10 +22,15 @@ const pagina = conteudoServicos[servico.id];
   <div class="servico__arte">
     <div class="servico__brilho" aria-hidden="true"></div>
     <Icone nome={servico.icone} tamanho={servico.destaque ? 72 : 56} class="servico__icone" />
+    <!-- width e height declarados reservam o espaço antes de a imagem chegar:
+         sem eles o navegador desenha o placeholder dele no lugar e o layout
+         pula quando a foto carrega. -->
     <img
       class="servico__foto"
       src={servico.imagem}
       alt={servico.imagemAlt}
+      width="1040"
+      height="780"
       loading="lazy"
       decoding="async"
       onerror="this.remove()"
@@ -117,7 +122,9 @@ const pagina = conteudoServicos[servico.id];
     opacity: 1;
   }
 
-  /* A foto cobre a arte quando existe; o ícone fica de reserva por baixo. */
+  /* A foto cobre a arte quando existe; o ícone fica de reserva por baixo.
+     Precisa ser 100% opaca: com opacidade menor, o ícone de reserva aparece
+     através dela como um fantasma — z-index controla ordem, não visibilidade. */
   .servico__foto {
     position: absolute;
     inset: 0;
@@ -125,13 +132,22 @@ const pagina = conteudoServicos[servico.id];
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.88;
-    transition: transform 0.5s ease, opacity 0.3s ease;
+    transition: transform 0.5s ease;
   }
 
   .servico:hover .servico__foto {
     transform: scale(1.04);
-    opacity: 1;
+  }
+
+  /* Véu escuro por cima da foto, para ela pertencer à paleta do site. É assim
+     que se escurece imagem: camada acima dela, nunca opacidade nela. */
+  .servico__arte::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgb(10 12 16 / 0.1) 40%, rgb(10 12 16 / 0.55));
   }
 
   /* --- Texto ------------------------------------------------------------- */

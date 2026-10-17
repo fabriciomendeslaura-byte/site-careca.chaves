@@ -3,11 +3,14 @@ import Logo from '../ui/Logo.astro';
 import Icone from '../ui/Icone.astro';
 import { negocio } from '../../data/negocio';
 
+/* Os links começam com `/` de propósito. O mesmo cabeçalho aparece nas páginas
+   de serviço, onde essas seções não existem — uma âncora solta ali não levaria
+   a lugar nenhum. Com a barra, o visitante sempre volta para a seção da home. */
 const menu = [
-  { texto: 'Serviços', href: '#servicos' },
-  { texto: 'Como funciona', href: '#como-funciona' },
-  { texto: 'Onde atendo', href: '#cobertura' },
-  { texto: 'Dúvidas', href: '#duvidas' },
+  { texto: 'Serviços', href: '/#servicos' },
+  { texto: 'Como funciona', href: '/#como-funciona' },
+  { texto: 'Atendimentos', href: '/#cobertura' },
+  { texto: 'Dúvidas', href: '/#duvidas' },
 ];
 ---
 
