@@ -1,0 +1,329 @@
+---
+/**
+ * Pagina de um bairro.
+ *
+ * A URL leva a palavra-chave — /chaveiro-copacabana — porque e assim que a
+ * pessoa busca. Uma rota so gera todas; o conteudo de cada bairro vive em
+ * src/data/bairros/.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import BarraFixaMobile from '../components/layout/BarraFixaMobile.astro';
+import Duvidas from '../components/secoes/Duvidas.astro';
+import Avaliacoes from '../components/secoes/Avaliacoes.astro';
+import ChamadaFinal from '../components/secoes/ChamadaFinal.astro';
+import Trilha from '../components/ui/Trilha.astro';
+import Icone from '../components/ui/Icone.astro';
+import SeloAvaliacoes from '../components/ui/SeloAvaliacoes.astro';
+import BotaoLigar from '../components/ui/BotaoLigar.astro';
+import BotaoZap from '../components/ui/BotaoZap.astro';
+import { bairros } from '../data/bairros';
+import { servicos } from '../data/servicos';
+import { conteudoServicos } from '../data/conteudo';
+import { negocio } from '../data/negocio';
+
+export function getStaticPaths() {
+  return bairros.map((bairro) => ({
+    params: { bairro: bairro.slug },
+    props: { bairro },
+  }));
+}
+
+const { bairro } = Astro.props;
+const urlDaPagina = new URL(`/chaveiro-${bairro.slug}`, Astro.site).href;
+
+const trilha = [
+  { texto: 'Início', href: '/' },
+  { texto: 'Onde atendo', href: '/#cobertura' },
+  { texto: bairro.nome },
+];
+
+const dadosDaTrilha = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: trilha.map((item, indice) => ({
+    '@type': 'ListItem',
+    position: indice + 1,
+    name: item.texto,
+    ...(item.href ? { item: new URL(item.href, Astro.site).href } : {}),
+  })),
+};
+
+/* Diz ao Google que o atendimento desta página cobre este bairro específico.
+   É o que liga a busca "chaveiro em Copacabana" a esta página, e não à home. */
+const dadosDoAtendimento = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: `Chaveiro 24 horas em ${bairro.nome}`,
+  description: bairro.descricaoSeo,
+  url: urlDaPagina,
+  provider: { '@id': `${negocio.site}/#negocio` },
+  areaServed: {
+    '@type': 'Place',
+    name: `${bairro.nome}, Rio de Janeiro`,
+  },
+  availableChannel: {
+    '@type': 'ServiceChannel',
+    servicePhone: negocio.telefone.e164,
+    serviceUrl: urlDaPagina,
+  },
+};
+---
+
+<BaseLayout
+  titulo={bairro.tituloSeo}
+  descricao={bairro.descricaoSeo}
+  perguntas={bairro.perguntas}
+  dadosExtras={[dadosDaTrilha, dadosDoAtendimento]}
+>
+  <Header />
+
+  <main id="conteudo">
+    <section class="topo">
+      <div class="topo__fundo" aria-hidden="true"></div>
+
+      <div class="area topo__interno">
+        <Trilha caminho={trilha} />
+
+        <p class="sobrancelha topo__marcador">
+          <Icone nome="local" tamanho={17} />
+          {bairro.regiao} · Rio de Janeiro
+        </p>
+
+        <h1 class="topo__titulo">{bairro.h1}</h1>
+        <p class="topo__chamada">{bairro.chamada}</p>
+
+        <SeloAvaliacoes />
+
+        <div class="topo__acoes">
+          <BotaoLigar texto="Ligar agora" comNumero />
+          <BotaoZap
+            texto="Chamar no WhatsApp"
+            mensagem={`Olá! Preciso de um chaveiro em ${bairro.nome}.`}
+            variante="fantasma"
+          />
+        </div>
+      </div>
+    </section>
+
+    <article class="secao">
+      <div class="area texto-longo">
+        {
+          bairro.blocos.map((bloco) => (
+            <section class="bloco revelar">
+              <h2 class="bloco__titulo">{bloco.titulo}</h2>
+              {bloco.paragrafos.map((paragrafo) => (
+                <p>{paragrafo}</p>
+              ))}
+              {bloco.itens && (
+                <ul class="bloco__lista">
+                  {bloco.itens.map((item) => (
+                    <li>
+                      <Icone nome="check" tamanho={17} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </article>
+
+    <section class="secao secao--escura">
+      <div class="area">
+        <h2 class="titulo-secao revelar">O que eu faço em {bairro.nome}</h2>
+        <ul class="servicos-do-bairro revelar">
+          {
+            servicos.map((servico) => (
+              <li>
+                <a href={conteudoServicos[servico.id] ? `/servicos/${conteudoServicos[servico.id]!.slug}` : '/#servicos'}>
+                  <Icone nome={servico.icone} tamanho={20} />
+                  <span>
+                    <strong>{servico.titulo}</strong>
+                    <small>{servico.gancho}</small>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <Avaliacoes bairro={bairro.nome} />
+
+    <Duvidas perguntas={bairro.perguntas} titulo={`Dúvidas de quem<br />mora em ${bairro.nome}`} />
+
+    <ChamadaFinal />
+  </main>
+
+  <Footer />
+  <BarraFixaMobile />
+</BaseLayout>
+
+<style>
+  .topo {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-borda);
+  }
+
+  .topo__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(90% 80% at 80% 0%, rgb(30 144 255 / 0.2), transparent 62%),
+      linear-gradient(180deg, #0c1016, var(--color-grafite));
+  }
+
+  .topo__interno {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-block: 28px clamp(48px, 7vw, 76px);
+  }
+
+  .topo__marcador {
+    margin: 10px 0 0;
+  }
+
+  .topo__titulo {
+    margin: 0;
+    font-size: clamp(2.2rem, 6.6vw, 3.9rem);
+    text-transform: uppercase;
+    line-height: 1;
+    max-width: 17ch;
+    background: linear-gradient(170deg, #ffffff 40%, #9fb3cc);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .topo__chamada {
+    margin: 0;
+    color: var(--color-texto-suave);
+    font-size: clamp(1.02rem, 2.2vw, 1.16rem);
+    max-width: 58ch;
+  }
+
+  .topo__acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+    width: 100%;
+  }
+
+  .topo__acoes > :global(*) {
+    flex: 1 1 auto;
+    min-width: 212px;
+  }
+
+  @media (min-width: 700px) {
+    .topo__acoes > :global(*) {
+      flex: 0 0 auto;
+      min-width: 0;
+    }
+  }
+
+  .texto-longo {
+    max-width: 74ch;
+  }
+
+  .bloco + .bloco {
+    margin-top: 44px;
+  }
+
+  .bloco__titulo {
+    font-size: clamp(1.55rem, 3.6vw, 2.1rem);
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  .bloco p {
+    color: var(--color-texto-suave);
+    margin: 0 0 14px;
+  }
+
+  .bloco__lista {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .bloco__lista li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    color: var(--color-texto-suave);
+    padding: 14px 16px;
+    background: rgb(255 255 255 / 0.03);
+    border: 1px solid var(--color-borda);
+    border-radius: 12px;
+  }
+
+  .bloco__lista :global(svg) {
+    color: var(--color-azul-brilho);
+    flex: none;
+    margin-top: 3px;
+  }
+
+  /* --- Serviços do bairro -------------------------------------------------- */
+  .servicos-do-bairro {
+    list-style: none;
+    margin: 28px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+
+  .servicos-do-bairro a {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px 18px;
+    border: 1px solid var(--color-borda);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.03);
+    color: var(--color-texto);
+    text-decoration: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .servicos-do-bairro a:hover {
+    border-color: var(--color-azul);
+    background: rgb(30 144 255 / 0.08);
+  }
+
+  .servicos-do-bairro :global(svg) {
+    color: var(--color-azul-brilho);
+    flex: none;
+  }
+
+  .servicos-do-bairro span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+
+  .servicos-do-bairro small {
+    color: var(--color-texto-fraco);
+    font-size: 0.86rem;
+  }
+
+  @media (min-width: 720px) {
+    .servicos-do-bairro {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

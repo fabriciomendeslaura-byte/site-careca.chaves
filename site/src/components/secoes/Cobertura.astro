@@ -2,7 +2,12 @@
 import Icone from '../ui/Icone.astro';
 import BotaoZap from '../ui/BotaoZap.astro';
 import { cobertura } from '../../data/cobertura';
+import { bairros } from '../../data/bairros';
 import { negocio } from '../../data/negocio';
+
+/* Bairro que tem página própria vira link. Sem isso o Google não teria como
+   descobrir a página: link interno é o caminho que ele percorre. */
+const paginasPorBairro = new Map(bairros.map((item) => [item.nome, `/chaveiro-${item.slug}`]));
 ---
 
 <section class="secao" id="cobertura">
@@ -30,7 +35,13 @@ import { negocio } from '../../data/negocio';
             <p class="regiao__nota">{regiao.nota}</p>
             <ul class="regiao__bairros">
               {regiao.bairros.map((bairro) => (
-                <li>{bairro}</li>
+                <li>
+                  {paginasPorBairro.has(bairro) ? (
+                    <a href={paginasPorBairro.get(bairro)}>{bairro}</a>
+                  ) : (
+                    bairro
+                  )}
+                </li>
               ))}
             </ul>
           </article>
@@ -120,6 +131,26 @@ import { negocio } from '../../data/negocio';
     border: 1px solid var(--color-borda);
     border-radius: var(--radius-pilula);
     padding: 5px 13px;
+  }
+
+  /* Bairro com página própria se destaca dos demais: o azul avisa que ali
+     existe mais a ler, em vez de ser só um nome na lista. */
+  .regiao__bairros li:has(a) {
+    border-color: rgb(30 144 255 / 0.45);
+    background: rgb(30 144 255 / 0.1);
+    padding: 0;
+  }
+
+  .regiao__bairros a {
+    display: inline-block;
+    padding: 5px 13px;
+    color: var(--color-azul-brilho);
+    text-decoration: none;
+  }
+
+  .regiao__bairros li:has(a):hover {
+    border-color: var(--color-azul);
+    background: rgb(30 144 255 / 0.18);
   }
 
   .cobertura__rodape {

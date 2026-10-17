@@ -1,0 +1,250 @@
+---
+/**
+ * Avaliacoes reais do Perfil da Empresa no Google.
+ *
+ * O texto e exato e o nome e publico. O link para o perfil fica em evidencia
+ * de proposito: a prova so vale porque pode ser conferida em dois cliques.
+ */
+import Icone from '../ui/Icone.astro';
+import { avaliacoes as todas, avaliacoesDoBairro, type Avaliacao } from '../../data/avaliacoes';
+import { negocio } from '../../data/negocio';
+
+interface Props {
+  /** Nas paginas de bairro, quem citou o bairro aparece primeiro. */
+  bairro?: string;
+  quantidade?: number;
+}
+
+const { bairro, quantidade = 6 } = Astro.props;
+
+const lista: Avaliacao[] = (bairro ? avaliacoesDoBairro(bairro) : todas).slice(0, quantidade);
+const { nota, quantidade: totalDeAvaliacoes, link } = negocio.avaliacoes;
+const notaEscrita = nota.toLocaleString('pt-BR', { minimumFractionDigits: 1 });
+---
+
+<section class="secao avaliacoes" id="avaliacoes">
+  <div class="area">
+    <header class="avaliacoes__topo revelar">
+      <div>
+        <p class="sobrancelha">
+          <Icone nome="check" tamanho={16} />
+          Quem já chamou
+        </p>
+        <h2 class="titulo-secao">Nota {notaEscrita}<br />no Google</h2>
+        <p class="texto-secao">
+          {totalDeAvaliacoes} avaliações de clientes de verdade, no Perfil da Empresa no Google.
+          Nenhum desses textos foi escrito por nós — e você pode conferir cada um deles.
+        </p>
+      </div>
+
+      <a class="avaliacoes__nota" href={link} target="_blank" rel="noopener">
+        <strong>{notaEscrita}</strong>
+        <span class="avaliacoes__estrelas" aria-hidden="true">
+          {
+            Array.from({ length: 5 }).map(() => (
+              <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17">
+                <path d="m12 2 2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z" />
+              </svg>
+            ))
+          }
+        </span>
+        <small>{totalDeAvaliacoes} avaliações</small>
+      </a>
+    </header>
+
+    <ul class="avaliacoes__lista">
+      {
+        lista.map((avaliacao) => (
+          <li class="avaliacao revelar">
+            <span class="avaliacao__estrelas" aria-label="5 de 5 estrelas">
+              {Array.from({ length: 5 }).map(() => (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true">
+                  <path d="m12 2 2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z" />
+                </svg>
+              ))}
+            </span>
+
+            <blockquote class="avaliacao__texto">{avaliacao.texto}</blockquote>
+
+            <footer class="avaliacao__autor">
+              <span class="avaliacao__inicial" aria-hidden="true">{avaliacao.nome.charAt(0)}</span>
+              <span>
+                <strong>{avaliacao.nome}</strong>
+                <small>
+                  {avaliacao.quando}
+                  {avaliacao.localGuide && ' · Local Guide'}
+                </small>
+              </span>
+            </footer>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a class="avaliacoes__link revelar" href={link} target="_blank" rel="noopener">
+      Ver as {totalDeAvaliacoes} avaliações no Google
+      <Icone nome="seta" tamanho={17} />
+    </a>
+  </div>
+</section>
+
+<style>
+  .avaliacoes {
+    background:
+      radial-gradient(100% 60% at 50% 0%, rgb(255 193 7 / 0.05), transparent 62%),
+      var(--color-grafite);
+    border-block: 1px solid var(--color-borda);
+  }
+
+  .avaliacoes__topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 26px;
+    margin-bottom: 38px;
+  }
+
+  /* Bloco da nota: o número grande é o resumo que o olho pega antes de ler. */
+  .avaliacoes__nota {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 18px 26px;
+    border-radius: var(--radius-card);
+    border: 1px solid rgb(255 193 7 / 0.3);
+    background: rgb(255 193 7 / 0.07);
+    text-decoration: none;
+    flex: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .avaliacoes__nota:hover {
+    border-color: rgb(255 193 7 / 0.6);
+  }
+
+  .avaliacoes__nota strong {
+    font-family: var(--font-display);
+    font-size: 2.9rem;
+    line-height: 1;
+    color: var(--color-texto);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .avaliacoes__nota small {
+    color: var(--color-texto-fraco);
+    font-size: 0.84rem;
+  }
+
+  .avaliacoes__estrelas,
+  .avaliacao__estrelas {
+    display: inline-flex;
+    gap: 2px;
+    /* Amarelo do próprio Google: trocar por azul faria perder o
+       reconhecimento imediato, que é justamente o valor do selo. */
+    color: #ffc107;
+  }
+
+  /* --- Cartões ----------------------------------------------------------- */
+  .avaliacoes__lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .avaliacao {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    padding: 22px 22px 20px;
+    background: linear-gradient(165deg, var(--color-superficie-alta), var(--color-superficie));
+    border: 1px solid var(--color-borda);
+    border-radius: var(--radius-card);
+  }
+
+  .avaliacao__texto {
+    margin: 0;
+    color: var(--color-texto-suave);
+    font-size: 1rem;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .avaliacao__autor {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding-top: 13px;
+    border-top: 1px solid var(--color-borda);
+  }
+
+  /* Inicial no lugar da foto: a foto é da conta do Google da pessoa, e usá-la
+     no site de outro negócio não é nosso direito.
+
+     Usa a fonte do corpo, e não a de título: Anton tem as métricas verticais
+     desenhadas para manchete grande, com folga desigual acima e abaixo da
+     letra. Num círculo pequeno isso joga o caractere para fora do centro.
+     Barlow tem a caixa equilibrada e assenta certo. */
+  .avaliacao__inicial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex: none;
+    border-radius: 50%;
+    background: rgb(30 144 255 / 0.14);
+    border: 1px solid rgb(30 144 255 / 0.3);
+    color: var(--color-azul-brilho);
+    font-family: var(--font-corpo);
+    font-weight: 700;
+    font-size: 1.02rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .avaliacao__autor span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+
+  .avaliacao__autor small {
+    color: var(--color-texto-fraco);
+    font-size: 0.82rem;
+  }
+
+  .avaliacoes__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 26px;
+    color: var(--color-azul-brilho);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .avaliacoes__link:hover :global(svg) {
+    transform: translateX(4px);
+  }
+
+  .avaliacoes__link :global(svg) {
+    transition: transform 0.2s ease;
+  }
+
+  @media (min-width: 720px) {
+    .avaliacoes__lista {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1060px) {
+    .avaliacoes__lista {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
